@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String   @id @default(uuid())
+  fullName          String
+  email             String   
+  passwordHash      String?
+  role              Role  
+  profileImageUrl   String?  @default("")
+  status            Status   @default(ACTIVE)
+  googleId          String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentProfile StudentProfile?
+  mentorProfile  mentorProfile?
+  
+  @@unique([email,role])
+  @@index([createdAt])
+}
+
+enum Role {
+    STUDENT
+    MENTOR
+    ADMIN
+}
+enum Status {
+    ACTIVE
+    SUSPENDED
+    PENDING_APPROVAL
+    APPROVED
+}
+
+model StudentProfile {
+  studentId      String   @id
+  timezone       String?
+  currentGoal    String?
+  bio            String?
+  followingCount Int      @default(0)
+  joinedAt       DateTime @default(now())
+
+  user User @relation(fields: [studentId],references: [id],onDelete: Cascade)
+}
+
+model mentorProfile {
+  mentorId String  @id
+  headline       String?
+  bio            String?
+  sessionPrice   Decimal @default(0) @db.Decimal(10, 2)
+  yearsExperience Int @default(0)
+  verificationStatus Status @default(ACTIVE)
+  followerCount  Int @default(0)
+  averageRating  Decimal @default(0) @db.Decimal(3, 2)
+  timezone       String?
+  approvedAt     DateTime?
+  teachingSubjects  String? 
+
+  user User @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+}
+
+model mentorSkill {
+  skillId    String @id @default(uuid())
+  mentorId   String 
+  skillName  String
+  subtopics  String?
+  proficiencyLevel  ProficiencyLevel
+}
+
+enum ProficiencyLevel {
+  ADVANCED
+  INTERMEDIATE
+  EXPERT
+}
+
+model mentorExperience {
+  experienceId  String  @id @default(uuid())
+  mentorId      String  
+  title         String
+  company       String?
+  employmentType EmploymentTypes
+  workPlaceType  WorkPlaceTypes
+  location      String?
+  startDate       DateTime
+  endDate         DateTime?
+  isCurrent       Boolean  @default(false)
+  description     String?     
+
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?
+  action       String
+  description  String?
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+}
+
+enum EmploymentTypes{
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+}
+enum WorkPlaceTypes{
+  REMOTE
+  ONSITE
+  HYBRID
+}

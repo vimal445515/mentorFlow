@@ -1,0 +1,13 @@
+@import "./variables.css";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+  }
+}
