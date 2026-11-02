@@ -7,7 +7,7 @@ import type { AuditLogResponseDto } from "../../application/dto/AuditLogResponse
 import type { CreateAuditLogDto } from "../../application/dto/CreateAuditLogDto.ts";
 
 export class AuditLogMapper {
-  static toDomain(record: PrismaAuditLog): AuditLog {
+  static fromDb(record: PrismaAuditLog): AuditLog {
     return new AuditLog({
       id: record.id,
       actorId: record.actorId,
@@ -20,7 +20,7 @@ export class AuditLogMapper {
     });
   }
 
-  static toPersistence(input: CreateAuditLogDto) {
+  static toDb(input: CreateAuditLogDto) {
     return {
       actorId: input.actorId,
       action: input.action,

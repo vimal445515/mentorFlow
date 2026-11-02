@@ -84,7 +84,7 @@ export type MentorExperienceRecord = {
 export type MentorSummaryExperienceRecord = Pick<MentorExperienceRecord, "title" | "company">;
 
 export class UserMapper {
-  static toDomain(record: UserRecord): ManagedUser {
+  static fromDb(record: UserRecord): ManagedUser {
     return new ManagedUser({
       id: record.id,
       fullName: record.fullName,
@@ -108,7 +108,7 @@ export class UserMapper {
     };
   }
 
-  static mentorToDomain(
+  static mentorFromDb(
     record: MentorListRecord,
     skills: string[],
     latestExperience: MentorSummaryExperienceRecord | null,
@@ -149,7 +149,7 @@ export class UserMapper {
     };
   }
 
-  static mentorDetailsToDomain(
+  static mentorDetailsFromDb(
     record: MentorDetailsRecord,
     skills: MentorSkillRecord[],
     experiences: MentorExperienceRecord[],

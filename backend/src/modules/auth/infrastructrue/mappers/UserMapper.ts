@@ -1,4 +1,4 @@
-import type {User as PrismaUser} from "@prisma/client";
+import type { Prisma, User as PrismaUser } from "@prisma/client";
 import {User} from "../../domain/entities/User.ts";
 import {UserRole} from "../../domain/enums/UserRole.ts";
 import {Role as PrismaUserRole} from "@prisma/client";
@@ -21,7 +21,7 @@ export class UserMapper {
         });
     }
 
-    static toDb(user:User) {
+    static toDb(user: User): Prisma.UserCreateInput {
         return {
             fullName: user.fullName,
             email: user.email,
@@ -32,7 +32,7 @@ export class UserMapper {
             googleId: user.googleId ?? null,
         };
     }
-    static toUpdateDb(user:Partial<User>): Partial<PrismaUser> {
+    static toUpdateDb(user: Partial<User>): Prisma.UserUpdateInput {
         return {
             ...(user.fullName !== undefined && { fullName: user.fullName }),
             ...(user.email !== undefined && { email: user.email }),
