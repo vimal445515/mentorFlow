@@ -11,6 +11,7 @@ import type {
   PaginatedResult,
 } from "../../domain/repositories/IUserManagementRepository.ts";
 import { UserMapper, userSelect, mentorListSelect, mentorDetailsSelect } from "../mappers/UserMapper.ts";
+import type { MentorDetails } from "../../domain/entities/MentorDetails.ts";
 
 @injectable()
 export class PrismaUserManagementRepository implements IUserManagementRepository {
@@ -191,4 +192,6 @@ export class PrismaUserManagementRepository implements IUserManagementRepository
     const mentor = await this.findMentorById(mentorId);
     return mentor ? UserMapper.mentorDetailsToListDomain(mentor) : null;
   }
+
+  
 }
