@@ -3,7 +3,6 @@ import {
   AuditLog,
   type AuditLogJsonValue,
 } from "../../domain/entities/AuditLog.ts";
-import type { AuditLogResponseDto } from "../../application/dto/AuditLogResponseDto.ts";
 import type { CreateAuditLogDto } from "../../application/dto/CreateAuditLogDto.ts";
 
 export class AuditLogMapper {
@@ -30,19 +29,6 @@ export class AuditLogMapper {
       ...(input.metadata && {
         metadata: input.metadata as Prisma.InputJsonObject,
       }),
-    };
-  }
-
-  static toResponseDto(entity: AuditLog): AuditLogResponseDto {
-    return {
-      id: entity.id,
-      actorId: entity.actorId,
-      action: entity.action,
-      description: entity.description,
-      resourceType: entity.resourceType,
-      resourceId: entity.resourceId,
-      metadata: entity.metadata,
-      createdAt: entity.createdAt,
     };
   }
 
