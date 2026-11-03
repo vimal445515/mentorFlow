@@ -6,7 +6,7 @@ import { AuditAction } from "../../../audit-log/domain/entities/AuditLog.ts";
 import type { IUpdateUserStatusUseCase } from "../../domain/interfaces/useCase/IUpdateUserStatusUseCase.ts";
 import type { UserResponseDto } from "../dto/UserResponseDto.ts";
 import type { UserStatus } from "../../domain/enums/UserStatus.ts";
-import { UserMapper } from "../mappers/UserMapper.ts";
+import { UserMapper } from "../../infrastructure/mappers/UserMapper.ts";
 
 export class UpdateUserStatusUseCase implements IUpdateUserStatusUseCase {
   constructor(
@@ -31,6 +31,6 @@ export class UpdateUserStatusUseCase implements IUpdateUserStatusUseCase {
       resourceId: userId,
       metadata: { updatedFields: ["status"], status },
     });
-    return UserMapper.toUserDto(user);
+    return UserMapper.toResponseDto(user);
   }
 }

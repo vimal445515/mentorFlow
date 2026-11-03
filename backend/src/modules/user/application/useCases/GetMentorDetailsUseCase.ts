@@ -3,7 +3,7 @@ import { HttpStatusCode } from "../../../../shared/constant/HttpStatusCode.ts";
 import type { IUserManagementRepository } from "../../domain/repositories/IUserManagementRepository.ts";
 import type { IGetMentorDetailsUseCase } from "../../domain/interfaces/useCase/IGetMentorDetailsUseCase.ts";
 import type { MentorDetailsResponseDto } from "../dto/UserResponseDto.ts";
-import { UserMapper } from "../mappers/UserMapper.ts";
+import { UserMapper } from "../../infrastructure/mappers/UserMapper.ts";
 
 export class GetMentorDetailsUseCase implements IGetMentorDetailsUseCase {
   constructor(private readonly userRepository: IUserManagementRepository) {}
@@ -13,6 +13,6 @@ export class GetMentorDetailsUseCase implements IGetMentorDetailsUseCase {
     if (!mentor) {
       throw new AppError("Mentor not found.", HttpStatusCode.NOT_FOUND);
     }
-    return UserMapper.toMentorDetailsDto(mentor);
+    return UserMapper.mentorDetailsToResponseDto(mentor);
   }
 }

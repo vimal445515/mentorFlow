@@ -4,15 +4,17 @@ import {
   type Prisma,
   type mentorExperience as PrismaExperience,
 } from "@prisma/client";
+import type { AddExperienceDto, UpdateExperienceDto } from "../../application/dto/ExperienceDto.ts";
 import { Experience } from "../../domain/entities/Experience.ts";
 import { EmploymentTypes, WorkPlaceTypes } from "../../domain/enums/experience.ts";
 
 export class ExperienceMapper {
   static toDb(
-    experience: Experience,
+    mentorId: string,
+    experience: AddExperienceDto,
   ): Prisma.mentorExperienceUncheckedCreateInput {
     return {
-      mentorId: experience.mentorId,
+      mentorId,
       title: experience.title,
       company: experience.company ?? null,
       employmentType:
@@ -27,7 +29,7 @@ export class ExperienceMapper {
   }
 
   static toUpdateDb(
-    experience: Partial<Experience>,
+    experience: UpdateExperienceDto,
   ): Prisma.mentorExperienceUncheckedUpdateInput {
     return {
       ...(experience.title !== undefined && { title: experience.title }),
@@ -75,4 +77,9 @@ export class ExperienceMapper {
     });
   }
 
+  static arrayFromDb(prismaExperiences: PrismaExperience[]): Experience[] {
+    return prismaExperiences.map((experience) =>
+      ExperienceMapper.fromDb(experience),
+    );
+  }
 }

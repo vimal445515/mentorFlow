@@ -17,7 +17,7 @@ export class PrismaProfileRepository implements IProfileRepository {
       },
     });
 
-    return user ? ProfileMapper.fromDb(user) : null;
+    return user ? ProfileMapper.toDomain(user) : null;
   }
 
   async createDefaultStudentProfile(userId: string): Promise<StudentProfile> {

@@ -5,7 +5,7 @@ import type { IWriteAuditLogUseCase } from "../../../audit-log/domain/interfaces
 import { AuditAction } from "../../../audit-log/domain/entities/AuditLog.ts";
 import type { IApproveMentorUseCase } from "../../domain/interfaces/useCase/IApproveMentorUseCase.ts";
 import type { MentorResponseDto } from "../dto/UserResponseDto.ts";
-import { UserMapper } from "../mappers/UserMapper.ts";
+import { UserMapper } from "../../infrastructure/mappers/UserMapper.ts";
 
 export class ApproveMentorUseCase implements IApproveMentorUseCase {
   constructor(
@@ -40,6 +40,6 @@ export class ApproveMentorUseCase implements IApproveMentorUseCase {
       resourceId: mentorId,
       metadata: { updatedFields: ["verificationStatus"], verificationStatus: "APPROVED" },
     });
-    return UserMapper.toMentorDto(mentor);
+    return UserMapper.mentorToResponseDto(mentor);
   }
 }

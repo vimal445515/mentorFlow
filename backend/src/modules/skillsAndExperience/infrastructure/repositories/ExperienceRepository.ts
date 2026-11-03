@@ -5,25 +5,13 @@ import type { IExperienceRepository } from "../../domain/repositories/IExperienc
 import { calculateYearsExperience } from "../../domain/utils/calculateYearsExperience.ts";
 import { ExperienceMapper } from "../mappers/ExperienceMapper.ts";
 import { prisma } from "../persistence/prisma.ts";
-import { BaseRepository } from "../../../../shared/base/repositories/baseRepository.ts";
 
 @injectable()
-export class PrismaExperienceRepository
-  extends BaseRepository<
-    Experience,
-    mentorExperience,
-    Prisma.mentorExperienceUncheckedCreateInput,
-    Prisma.mentorExperienceUncheckedUpdateInput
-  >
-  implements IExperienceRepository {
-  constructor() {
-    super(prisma.mentorExperience, ExperienceMapper, "experienceId");
-  }
-
-  override async create(data: Experience): Promise<Experience> {
+export class PrismaExperienceRepository implements IExperienceRepository {
+  async create(data: Experience): Promise<Experience> {
     const createdExperience = await prisma.$transaction(async (transaction) => {
       const created = await transaction.mentorExperience.create({
-        data: ExperienceMapper.toDb(data),
+        data: ExperienceMapper.toDb(data.mentorId, data),
       });
       await this.updateMentorYearsExperience(transaction, data.mentorId);
       return created;
@@ -31,7 +19,7 @@ export class PrismaExperienceRepository
     return ExperienceMapper.fromDb(createdExperience);
   }
 
-  override async update(id: string, data: Partial<Experience>): Promise<Experience> {
+  async update(id: string, data: Partial<Experience>): Promise<Experience> {
     const updatedExperience = await prisma.$transaction(async (transaction) => {
       const updated = await transaction.mentorExperience.update({
         where: { experienceId: id },
@@ -43,7 +31,19 @@ export class PrismaExperienceRepository
     return ExperienceMapper.fromDb(updatedExperience);
   }
 
-  override async delete(id: string): Promise<void> {
+  async findById(id: string): Promise<Experience | null> {
+    const experience = await prisma.mentorExperience.findUnique({
+      where: { experienceId: id },
+    });
+    return experience ? ExperienceMapper.fromDb(experience) : null;
+  }
+
+  async findAll(): Promise<Experience[]> {
+    const experiences = await prisma.mentorExperience.findMany();
+    return ExperienceMapper.arrayFromDb(experiences);
+  }
+
+  async delete(id: string): Promise<void> {
     await prisma.$transaction(async (transaction) => {
       const deleted = await transaction.mentorExperience.delete({
         where: { experienceId: id },
@@ -59,7 +59,7 @@ export class PrismaExperienceRepository
         where: { mentorId },
         orderBy: { startDate: "desc" },
       });
-    return experiences.map(ExperienceMapper.fromDb);
+    return ExperienceMapper.arrayFromDb(experiences);
   }
 
   private async updateMentorYearsExperience(

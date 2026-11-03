@@ -30,7 +30,6 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
       },
-      allowedHosts: ['catty-pedigree-grappling.ngrok-free.dev'],
     },
   };
 });

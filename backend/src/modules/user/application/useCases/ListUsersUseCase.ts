@@ -2,7 +2,7 @@ import type { IUserManagementRepository } from "../../domain/repositories/IUserM
 import type { UserListFiltersDto } from "../dto/UserListFiltersDto.ts";
 import type { IListUsersUseCase } from "../../domain/interfaces/useCase/IListUsersUseCase.ts";
 import type { PaginatedUsersResponseDto } from "../dto/UserResponseDto.ts";
-import { UserMapper } from "../mappers/UserMapper.ts";
+import { UserMapper } from "../../infrastructure/mappers/UserMapper.ts";
 
 export class ListUsersUseCase implements IListUsersUseCase {
   constructor(private readonly userRepository: IUserManagementRepository) {}
@@ -10,7 +10,7 @@ export class ListUsersUseCase implements IListUsersUseCase {
   async execute(filters: UserListFiltersDto): Promise<PaginatedUsersResponseDto> {
     const result = await this.userRepository.findUsers(filters);
     return {
-      users: result.items.map(UserMapper.toUserDto),
+      users: result.items.map(UserMapper.toResponseDto),
       page: filters.page,
       limit: filters.limit,
       total: result.total,
