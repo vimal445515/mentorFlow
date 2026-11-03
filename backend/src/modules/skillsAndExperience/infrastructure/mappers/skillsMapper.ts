@@ -40,16 +40,4 @@ export class SkillsMapper {
     });
   }
 
-  static arrayFromDb(prismaSkills: PrismaMentorSkill[]): MentorSkill[] {
-    return prismaSkills.map(
-      (prismaSkill) =>
-        new MentorSkill({
-          skillId: prismaSkill.skillId,
-          mentorId: prismaSkill.mentorId,
-          skillName: prismaSkill.skillName,
-          subtopics: prismaSkill.subtopics,
-          proficiencyLevel: prismaSkill.proficiencyLevel as ProficiencyLevel,
-        }),
-    );
-  }
 }
