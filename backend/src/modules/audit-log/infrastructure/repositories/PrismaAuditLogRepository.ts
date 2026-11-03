@@ -11,7 +11,7 @@ import type {
 export class PrismaAuditLogRepository implements IAuditLogRepository {
   async create(input: CreateAuditLogDto): Promise<void> {
     await prisma.auditLog.create({
-      data: AuditLogMapper.toDb(input),
+      data: AuditLogMapper.toPersistence(input),
     });
   }
 
@@ -32,7 +32,7 @@ export class PrismaAuditLogRepository implements IAuditLogRepository {
     ]);
 
     return {
-      logs: records.map(AuditLogMapper.fromDb),
+      logs: records.map(AuditLogMapper.toDomain),
       total,
     };
   }

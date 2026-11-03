@@ -3,7 +3,7 @@ import { StudentProfile } from "../../domain/entities/StudentProfile.ts";
 import { MentorProfile } from "../../domain/entities/MentorProfile.ts";
 
 export class ProfileMapper {
-  static fromDb(rawUser: any): UserProfile {
+  static toDomain(rawUser: any): UserProfile {
     const studentProfile = rawUser.studentProfile
       ? new StudentProfile({
           studentId: rawUser.studentProfile.studentId,
