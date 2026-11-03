@@ -11,6 +11,7 @@ import type {
   PaginatedResult,
 } from "../../domain/repositories/IUserManagementRepository.ts";
 import { UserMapper, userSelect, mentorListSelect, mentorDetailsSelect } from "../mappers/UserMapper.ts";
+import type { MentorDetails } from "../../domain/entities/MentorDetails.ts";
 
 @injectable()
 export class PrismaUserManagementRepository implements IUserManagementRepository {
@@ -45,7 +46,7 @@ export class PrismaUserManagementRepository implements IUserManagementRepository
       prisma.user.count({ where }),
     ]);
 
-    return { items: records.map(UserMapper.toDomain), total };
+    return { items: records.map(UserMapper.fromDb), total };
   }
 
   async findMentors(filters: MentorListFiltersDto): Promise<PaginatedResult<ManagedMentor>> {
@@ -100,7 +101,7 @@ export class PrismaUserManagementRepository implements IUserManagementRepository
 
     return {
       items: users.map((user) =>
-        UserMapper.mentorToDomain(
+        UserMapper.mentorFromDb(
           user,
           skillsByMentor.get(user.id) ?? [],
           latestExperienceByMentor.get(user.id) ?? null,
@@ -148,7 +149,7 @@ export class PrismaUserManagementRepository implements IUserManagementRepository
       }),
     ]);
 
-    return UserMapper.mentorDetailsToDomain(user, skills, experiences);
+    return UserMapper.mentorDetailsFromDb(user, skills, experiences);
   }
 
   async approveMentor(mentorId: string) {
@@ -184,11 +185,13 @@ export class PrismaUserManagementRepository implements IUserManagementRepository
       where: { id: userId },
       select: userSelect,
     });
-    return user ? UserMapper.toDomain(user) : null;
+    return user ? UserMapper.fromDb(user) : null;
   }
 
   private async getMentorSummary(mentorId: string) {
     const mentor = await this.findMentorById(mentorId);
     return mentor ? UserMapper.mentorDetailsToListDomain(mentor) : null;
   }
+
+  
 }
