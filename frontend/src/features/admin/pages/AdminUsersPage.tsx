@@ -5,14 +5,10 @@ import {
   useState,
   type FC,
 } from "react";
-import {
-  Ban,
-  CheckCircle2,
-  Search,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { isAxiosError } from "axios";
 import { useToast } from "@/shared/components/Toast";
-import { AdminPagination } from "../components/AdminPagination";
+import { AdminUsersTable } from "../components/AdminUsersTable";
 import { AdminTopBar } from "../components/AdminTopBar";
 import { getUsers, updateUserStatus } from "../api/userApi";
 import {showAlert} from "@/shared/components/alertBox.ts" 
@@ -40,18 +36,6 @@ function getErrorMessage(error: unknown, fallback: string): string {
     return error.response?.data?.message ?? error.message ?? fallback;
   }
   return error instanceof Error ? error.message : fallback;
-}
-
-function formatStatus(status: ManagedUserStatus): string {
-  return status.replaceAll("_", " ");
-}
-
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
 }
 
 export const AdminUsersPage: FC = () => {
@@ -254,124 +238,18 @@ export const AdminUsersPage: FC = () => {
             </div>
           </section>
 
-          <section
-            aria-label="Users"
-            className="overflow-hidden rounded-2xl border border-[#EBE6DF] bg-white shadow-xs"
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-[#EBE6DF] bg-stone-50/50 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
-                    <th scope="col" className="px-6 py-3.5">User</th>
-                    <th scope="col" className="px-6 py-3.5">Email</th>
-                    <th scope="col" className="px-6 py-3.5">Role</th>
-                    <th scope="col" className="px-6 py-3.5">Status</th>
-                    <th scope="col" className="px-6 py-3.5">Joined</th>
-                    <th scope="col" className="px-6 py-3.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#EBE6DF] text-sm">
-                  {isLoading ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-sm text-stone-500">
-                        Loading users…
-                      </td>
-                    </tr>
-                  ) : loadError ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-sm text-red-600">
-                        {loadError}
-                      </td>
-                    </tr>
-                  ) : usersPage.users.length ? (
-                    usersPage.users.map((user) => (
-                      <tr key={user.id} className="transition-colors hover:bg-stone-50/80">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            {user.profileImageUrl ? (
-                              <img
-                                src={user.profileImageUrl}
-                                alt=""
-                                className="h-9 w-9 shrink-0 rounded-full border border-stone-200 object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FDF0EC] text-sm font-semibold text-[#C85A32]">
-                                {user.fullName.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <p className="font-semibold leading-tight text-stone-900">
-                                {user.fullName}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-stone-600">{user.email}</td>
-                        <td className="px-6 py-4">
-                          <span className="inline-flex rounded-md border border-emerald-200/50 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
-                            {user.role === "STUDENT" ? "Student" : "Mentor"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex rounded-md border px-2.5 py-0.5 text-[11px] font-bold tracking-wide ${
-                              user.status === "ACTIVE"
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-600"
-                                : user.status === "SUSPENDED"
-                                  ? "border-red-200 bg-red-50 text-red-600"
-                                  : "border-amber-200 bg-amber-50 text-amber-700"
-                            }`}
-                          >
-                            {formatStatus(user.status)}
-                          </span>
-                        </td>
-                        <td className="whitespace-nowrap px-6 py-4 text-xs text-stone-500">
-                          {formatDate(user.createdAt)}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            type="button"
-                            disabled={updatingUserId !== null}
-                            onClick={() => void handleStatusChange(user)}
-                            className={`inline-flex items-center gap-1.5 rounded-lg border bg-white px-3 py-1.5 text-xs font-medium shadow-xs transition-colors disabled:cursor-wait disabled:opacity-50 ${
-                              user.status !== "SUSPENDED"
-                                ? "border-red-200 text-red-600 hover:bg-red-50"
-                                : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                            }`}
-                          >
-                            {user.status !== "SUSPENDED" ? (
-                              <>
-                                <Ban size={13} />
-                                {updatingUserId === user.id ? "Updating…" : "Suspend"}
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle2 size={13} />
-                                {updatingUserId === user.id ? "Updating…" : "Activate"}
-                              </>
-                            )}
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-sm text-stone-500">
-                        No users match your search and filters.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <AdminPagination
-              page={page}
-              pageSize={pageSize}
-              total={usersPage.total}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
-          </section>
+          <AdminUsersTable
+            users={usersPage.users}
+            isLoading={isLoading}
+            error={loadError}
+            updatingUserId={updatingUserId}
+            page={page}
+            pageSize={pageSize}
+            total={usersPage.total}
+            onStatusChange={(user) => void handleStatusChange(user)}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </div>
       </main>
     </div>
