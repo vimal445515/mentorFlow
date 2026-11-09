@@ -1,5 +1,7 @@
 import type { FC } from "react";
 import type { AuditLogRecord } from "../types/auditLog.types";
+import type { DataTableColumn, DataTableProps } from "@/shared/components/DataTable/types";
+import { DataTable } from "@/shared/components/DataTable/DataTable";
 
 interface AuditLogTableProps {
   logs: AuditLogRecord[];
@@ -81,93 +83,90 @@ function renderMetadata(metadata: AuditLogRecord["metadata"]) {
   );
 }
 
+const columns:DataTableProps<AuditLogRecord>['columns'] =[
+  {
+    id:"when",
+    header:"when",
+    className:"whitespace-nowrap text-xs text-stone-600",
+    cell:(row)=>(
+      <time dateTime={row.createdAt}>{formatDate(row.createdAt)}</time>
+    )
+  },
+
+
+  {
+    id:"action",
+    header:"action",
+    className:"text-xs",
+    cell:(log)=>(<span
+        className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+          log.action === "LOGIN" || log.action === "USER_CREATED"
+            ? "bg-emerald-50 text-emerald-700"
+            : log.action === "LOGOUT"
+              ? "bg-stone-100 text-stone-700"
+              : "bg-blue-50 text-blue-700"
+        }`}
+      >
+        {formatAction(log.action)}
+      </span>
+
+    )
+  },
+
+   {
+    id: "description",
+    header: "What happened",
+    headerClassName: "min-w-64",
+    className: "max-w-sm text-sm leading-5 text-stone-700",
+    cell: (log) => getDescription(log),
+  },
+
+   {
+    id: "performedBy",
+    header: "Performed by",
+    className: "max-w-48 break-all font-mono text-xs text-stone-600",
+    cell: (log) =>
+      log.actorId ? (
+        <span title={log.actorId}>{log.actorId}</span>
+      ) : (
+        <span className="font-sans text-stone-400">System</span>
+      ),
+  },
+
+
+   {
+    id: "affectedRecord",
+    header: "Affected record",
+    className: "max-w-56 text-xs text-stone-600",
+    cell: (log) => (
+      <>
+        <span className="font-semibold text-stone-700">
+          {formatFieldName(log.resourceType)}
+        </span>
+
+        <span
+          className="mt-1 block break-all font-mono"
+          title={log.resourceId ?? undefined}
+        >
+          {log.resourceId ?? "—"}
+        </span>
+      </>
+    ),
+  },
+
+    {
+    id: "metadata",
+    header: "Additional details",
+    cell: (log) => renderMetadata(log.metadata),
+  },
+];
+
+
 export const AuditLogTable: FC<AuditLogTableProps> = ({
   logs,
   isLoading,
   error,
   onRetry,
-}) => (
-  <section
-    aria-label="Audit log entries"
-    className="overflow-hidden rounded-2xl border border-[#EBE6DF] bg-white shadow-xs"
-  >
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-left">
-        <thead>
-          <tr className="border-b border-[#EBE6DF] bg-stone-50/50 text-[11px] font-semibold uppercase tracking-wider text-stone-500">
-            <th scope="col" className="px-6 py-3.5">When</th>
-            <th scope="col" className="px-6 py-3.5">Action</th>
-            <th scope="col" className="min-w-64 px-6 py-3.5">What happened</th>
-            <th scope="col" className="px-6 py-3.5">Performed by</th>
-            <th scope="col" className="px-6 py-3.5">Affected record</th>
-            <th scope="col" className="px-6 py-3.5">Additional details</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[#EBE6DF] text-sm">
-          {isLoading ? (
-            <tr>
-              <td colSpan={6} className="px-6 py-12 text-center text-stone-500">
-                Loading audit logs…
-              </td>
-            </tr>
-          ) : error ? (
-            <tr>
-              <td colSpan={6} className="px-6 py-12 text-center">
-                <p className="text-sm text-red-600">{error}</p>
-                <button
-                  type="button"
-                  onClick={onRetry}
-                  className="mt-3 rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-stone-50"
-                >
-                  Try again
-                </button>
-              </td>
-            </tr>
-          ) : logs.length === 0 ? (
-            <tr>
-              <td colSpan={6} className="px-6 py-12 text-center text-stone-500">
-                No audit log entries found.
-              </td>
-            </tr>
-          ) : (
-            logs.map((log) => (
-              <tr key={log.id} className="align-top transition-colors hover:bg-stone-50/80">
-                <td className="whitespace-nowrap px-6 py-4 text-xs text-stone-600">
-                  <time dateTime={log.createdAt}>{formatDate(log.createdAt)}</time>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                    log.action === "LOGIN" || log.action === "USER_CREATED"
-                      ? "bg-emerald-50 text-emerald-700"
-                      : log.action === "LOGOUT"
-                        ? "bg-stone-100 text-stone-700"
-                        : "bg-blue-50 text-blue-700"
-                  }`}>
-                    {formatAction(log.action)}
-                  </span>
-                </td>
-                <td className="max-w-sm px-6 py-4 text-sm leading-5 text-stone-700">
-                  {getDescription(log)}
-                </td>
-                <td className="max-w-48 break-all px-6 py-4 font-mono text-xs text-stone-600">
-                  {log.actorId ? (
-                    <span title={log.actorId}>{log.actorId}</span>
-                  ) : (
-                    <span className="font-sans text-stone-400">System</span>
-                  )}
-                </td>
-                <td className="max-w-56 px-6 py-4 text-xs text-stone-600">
-                  <span className="font-semibold text-stone-700">{formatFieldName(log.resourceType)}</span>
-                  <span className="mt-1 block break-all font-mono" title={log.resourceId ?? undefined}>
-                    {log.resourceId ?? "—"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">{renderMetadata(log.metadata)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  </section>
-);
+}) =>(<section>
+  <DataTable columns={columns} data={logs} getRowId={(log)=>log.id} isLoading={isLoading} error={error} onRetry={onRetry} emptyMessage="No audit log entries found." loadingMessage="Loading audit logs…" />
+</section>)
