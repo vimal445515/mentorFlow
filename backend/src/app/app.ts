@@ -5,6 +5,7 @@ import cors from 'cors'
 
 import { auditLogModule, authModule, profileModule, skillsAndExperiencesModule, userModule } from '../config/inversify.config.ts';
 import { errorHandler } from './middlewares/errorHandler.ts';
+import { availabilityRoutes } from '../modules/availability/presentation/routes/availability.routes.ts';
 
 const createApp = () => {
     const app = express();
@@ -19,6 +20,7 @@ const createApp = () => {
     app.use('/api/v1/auth', authModule.authRoutes);
     app.use('/api/v1/profile', profileModule.profileRoutes);
     app.use('/api/v1/skills', skillsAndExperiencesModule.skillRoutes);
+    app.use('/api/v1/availability', availabilityRoutes);
     app.use('/api/v1/users', userModule.userRoutes);
     app.use('/api/v1/audit-logs', auditLogModule.auditLogRoutes);
     app.use(errorHandler);

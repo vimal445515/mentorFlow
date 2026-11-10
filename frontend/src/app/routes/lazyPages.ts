@@ -69,6 +69,12 @@ export const MentorSkillsPage = lazy(()=>
 export const MentorExperiencePage = lazy(()=>
 import("@/features/skillsAndExperiences/pages/experiencesPage").then((m)=>({default:m.MentorExperiencePage})))
 
+export const AvailabilityPage = lazy(() =>
+  import("@/features/mentor/pages/avilabilityPage").then((m) => ({
+    default: m.AvailabilityPage,
+  })),
+);
+
 // Standalone pages
 export const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 export const UnauthorizedPage = lazy(() => import("@/shared/pages/UnauthorizedPage"));

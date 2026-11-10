@@ -19,6 +19,11 @@ export const ENDPOINTS = {
     UPDATE: "/profile",
     REQUEST_ADMIN_APPROVAL: "/profile/request-approval",
   },
+  AVAILABILITY: {
+    LIST: "/availability",
+    CREATE: "/availability",
+    DELETE: (slotId: string) => `/availability/${slotId}`,
+  },
   USERS: {
     LIST: "/users",
     UPDATE_STATUS: (userId: string) => `/users/${userId}/status`,

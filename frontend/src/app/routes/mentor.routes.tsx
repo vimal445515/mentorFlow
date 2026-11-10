@@ -3,7 +3,12 @@ import { ProtectedRoute } from "@/shared/guards/ProtectedRoute";
 import { RoleGuard } from "@/shared/guards/RoleGuard";
 import { MentorLayout } from "@/shared/layouts/MentorLayout";
 import { withSuspense } from "@/shared/components/withSuspense";
-import { MentorProfilePage,MentorSkillsPage,MentorExperiencePage } from "./lazyPages";
+import {
+  AvailabilityPage,
+  MentorExperiencePage,
+  MentorProfilePage,
+  MentorSkillsPage,
+} from "./lazyPages";
 
 export const mentorRoutes: RouteObject = {
   path: "/mentor",
@@ -26,6 +31,10 @@ export const mentorRoutes: RouteObject = {
     {
       path:"experiences",
       element:withSuspense(<MentorExperiencePage/>)
+    },
+    {
+      path: "availability",
+      element: withSuspense(<AvailabilityPage />),
     }
   ],
 };

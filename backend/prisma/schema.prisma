@@ -60,8 +60,22 @@ model mentorProfile {
   timezone       String?
   approvedAt     DateTime?
   teachingSubjects  String? 
+  availabilitySlots AvailabilitySlot[]
 
   user User @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+}
+
+model AvailabilitySlot {
+  slotId    String   @id @default(uuid())
+  mentorId  String
+  date      DateTime @db.Date
+  startTime String
+  endTime   String
+
+  mentor mentorProfile @relation(fields: [mentorId], references: [mentorId], onDelete: Cascade)
+
+  @@unique([mentorId, date, startTime, endTime])
+  @@index([mentorId, date])
 }
 
 model mentorSkill {

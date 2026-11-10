@@ -32,7 +32,7 @@ export const MentorSidebar: FC<MentorSidebarProps> = ({ activeItem = "Profile" }
     { id: "Profile", label: "Profile", icon: User, path: "/mentor/profile" },
     { id: "skills", label: "Skills", icon: Code2, path: "/mentor/skills" },
     { id: "Experiences", label: "Experiences", icon: Briefcase ,path:"/mentor/experiences" },
-    { id: "Availability", label: "Availability", icon: Clock },
+    { id: "Availability", label: "Availability", icon: Clock, path: "/mentor/availability" },
     { id: "Channel", label: "Channel", icon: Megaphone },
     { id: "Bookings", label: "Bookings", icon: Calendar },
     { id: "Sessions", label: "Sessions", icon: Video },
