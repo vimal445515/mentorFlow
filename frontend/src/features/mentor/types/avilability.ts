@@ -17,6 +17,7 @@ export interface AvailabilitySlotData {
   date: string;
   startTime: string;
   endTime: string;
+  isBooked:boolean;
 }
 
 export interface AvailabilityApiResponse<T> {

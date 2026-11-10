@@ -5,6 +5,7 @@ import { bindProfile } from "./bindings/profile.binder.ts";
 import { bindSkillsAndExperiences } from "./bindings/skillsAndExperiences.binder.ts";
 import { bindUsers } from "./bindings/user.binder.ts";
 import { bindAuditLogs } from "./bindings/auditLog.binder.ts";
+import { bindAvailability } from "./bindings/availability.binder.ts";
 
 const container = new Container();
 bindCore(container);
@@ -14,5 +15,6 @@ export const authModule = bindAuth(container, auditLogModule.writeAuditLogUseCas
 export const profileModule = bindProfile(container, auditLogModule.writeAuditLogUseCase);
 export const skillsAndExperiencesModule = bindSkillsAndExperiences(container);
 export const userModule = bindUsers(auditLogModule.writeAuditLogUseCase);
+export const availabilityModule = bindAvailability(container);
 
 export default container;
