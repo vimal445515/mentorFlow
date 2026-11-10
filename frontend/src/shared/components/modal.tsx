@@ -5,10 +5,18 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   subtitle?: string;
+  className?: string;
   children: ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, subtitle, children }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  className,
+  children,
+}: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -46,7 +54,10 @@ export function Modal({ isOpen, onClose, title, subtitle, children }: ModalProps
         onClose();
       }}
       onClick={handleBackdropClick}
-      className="m-auto max-h-[85vh] w-[min(90vw,40rem)] overflow-y-auto rounded-2xl border-0 bg-white p-0 text-stone-900 shadow-xl backdrop:bg-black/50"
+      className={
+        className ??
+        "m-auto max-h-[85vh] w-[min(90vw,40rem)] overflow-y-auto rounded-2xl border-0 bg-white p-0 text-stone-900 shadow-xl backdrop:bg-black/50"
+      }
     >
       {title && (
         <header className="flex items-center justify-between border-b border-stone-200 px-6 py-4">

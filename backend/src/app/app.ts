@@ -9,6 +9,7 @@ import {
   skillsAndExperiencesModule,
   userModule,
   availabilityModule,
+  channelModule,
 } from "../config/inversify.config.ts";
 import { errorHandler } from "./middlewares/errorHandler.ts";
 
@@ -29,6 +30,7 @@ const createApp = () => {
   app.use("/api/v1/skills", skillsAndExperiencesModule.skillRoutes);
   app.use("/api/v1/users", userModule.userRoutes);
   app.use("/api/v1/availability", availabilityModule.availabilityRoutes);
+  app.use("/api/v1/channels", channelModule.channelRoutes);
   app.use("/api/v1/audit-logs", auditLogModule.auditLogRoutes);
   app.use(errorHandler);
   return app;

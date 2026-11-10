@@ -61,6 +61,7 @@ model mentorProfile {
   approvedAt     DateTime?
   teachingSubjects  String? 
   availabilitySlots AvailabilitySlot[]
+  channels Channel[]
 
   user User @relation(fields: [mentorId], references: [id], onDelete: Cascade)
 }
@@ -135,4 +136,21 @@ model AvailabilitySlot {
   @@index([mentorId, date])
 }
 
+model Channel {
+  channelId   String   @id @default(uuid())
+  mentorId    String
+  name        String
+  category    String
+  topic       String
+  description String
+  tags        String[] @default([])
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  isDeleted   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
 
+  mentor mentorProfile @relation(fields: [mentorId], references: [mentorId], onDelete: Cascade)
+
+  @@index([mentorId, createdAt])
+  @@index([mentorId, name])
+}
