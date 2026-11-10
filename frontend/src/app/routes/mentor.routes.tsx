@@ -5,6 +5,7 @@ import { MentorLayout } from "@/shared/layouts/MentorLayout";
 import { withSuspense } from "@/shared/components/withSuspense";
 import {
   AvailabilityPage,
+  ChannelsPage,
   MentorExperiencePage,
   MentorProfilePage,
   MentorSkillsPage,
@@ -25,16 +26,20 @@ export const mentorRoutes: RouteObject = {
       element: withSuspense(<MentorProfilePage />),
     },
     {
-      path:"skills",
-      element:withSuspense(<MentorSkillsPage/>)
+      path: "skills",
+      element: withSuspense(<MentorSkillsPage />),
     },
     {
-      path:"experiences",
-      element:withSuspense(<MentorExperiencePage/>)
+      path: "experiences",
+      element: withSuspense(<MentorExperiencePage />),
     },
     {
       path: "availability",
       element: withSuspense(<AvailabilityPage />),
-    }
+    },
+    {
+      path: "channel",
+      element: withSuspense(<ChannelsPage />),
+    },
   ],
 };

@@ -60,19 +60,26 @@ export const MentorProfilePage = lazy(() =>
   })),
 );
 
-export const MentorSkillsPage = lazy(()=>
-  import("@/features/skillsAndExperiences/pages/MentorSkillsPage").then((m)=>({
-    default:m.MentorSkillsPage,
-  }))
-)
+export const MentorSkillsPage = lazy(() =>
+  import("@/features/skillsAndExperiences/pages/MentorSkillsPage").then((m) => ({
+    default: m.MentorSkillsPage,
+  })),
+);
 
-export const MentorExperiencePage = lazy(()=>
-import("@/features/skillsAndExperiences/pages/experiencesPage").then((m)=>({default:m.MentorExperiencePage})))
+export const MentorExperiencePage = lazy(() =>
+  import("@/features/skillsAndExperiences/pages/experiencesPage").then((m) => ({
+    default: m.MentorExperiencePage,
+  })),
+);
 
 export const AvailabilityPage = lazy(() =>
   import("@/features/mentor/pages/avilabilityPage").then((m) => ({
     default: m.AvailabilityPage,
   })),
+);
+
+export const ChannelsPage = lazy(() =>
+  import("@/features/channel/pages/listAllChannelsPage").then((m) => ({ default: m.ChannelsPage })),
 );
 
 // Standalone pages
