@@ -29,6 +29,11 @@ export const ENDPOINTS = {
     CREATE: "/channels",
     BY_ID: (channelId: string) => `/channels/${encodeURIComponent(channelId)}`,
   },
+  CHANNEL_POSTS: {
+    BY_CHANNEL: (channelId: string) =>
+      `/channels/${encodeURIComponent(channelId)}/posts`,
+    BY_ID: (postId: string) => `/channels/posts/${encodeURIComponent(postId)}`,
+  },
   USERS: {
     LIST: "/users",
     UPDATE_STATUS: (userId: string) => `/users/${userId}/status`,

@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useRef, type FC } from "react";
 import {
   FileText,
   Bold,
@@ -19,6 +19,8 @@ interface TextArticleFormProps {
   setContent: (val: string) => void;
   tags: string;
   setTags: (val: string) => void;
+  thumbnailFile: File | null;
+  setThumbnailFile: (file: File | null) => void;
 }
 
 export const TextArticleForm: FC<TextArticleFormProps> = ({
@@ -28,7 +30,11 @@ export const TextArticleForm: FC<TextArticleFormProps> = ({
   setContent,
   tags,
   setTags,
+  thumbnailFile,
+  setThumbnailFile,
 }) => {
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
       <div className="flex items-center gap-3 pb-4 border-b border-stone-100">
@@ -102,6 +108,16 @@ export const TextArticleForm: FC<TextArticleFormProps> = ({
           <label className="block text-xs font-bold text-stone-700">
             Thumbnail Image (Direct Upload)
           </label>
+          <input
+            ref={thumbnailInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="sr-only"
+            onChange={(event) => {
+              setThumbnailFile(event.currentTarget.files?.[0] ?? null);
+              event.currentTarget.value = "";
+            }}
+          />
           <div className="border-2 border-dashed border-stone-200 rounded-2xl p-6 text-center space-y-3 bg-[#FAF8F5]/50 hover:bg-[#FAF8F5] transition-colors cursor-pointer">
             <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mx-auto shadow-xs">
               <Upload className="w-5 h-5" />
@@ -114,6 +130,7 @@ export const TextArticleForm: FC<TextArticleFormProps> = ({
             </div>
             <button
               type="button"
+              onClick={() => thumbnailInputRef.current?.click()}
               className="px-3.5 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs inline-flex items-center gap-1.5 hover:bg-stone-50"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -121,27 +138,27 @@ export const TextArticleForm: FC<TextArticleFormProps> = ({
             </button>
           </div>
 
-          {/* Attached Image Item Preview */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-white shadow-xs mt-2">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-8 rounded bg-stone-100 overflow-hidden border border-stone-200 shrink-0">
-                <div className="w-full h-full bg-[#3D6946]/20 flex items-center justify-center text-[10px] font-bold text-[#3D6946]">
+          {thumbnailFile && (
+            <div className="flex items-center justify-between p-3 rounded-xl border border-stone-200 bg-white shadow-xs mt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-8 rounded bg-stone-100 overflow-hidden border border-stone-200 shrink-0 flex items-center justify-center text-[10px] font-bold text-[#3D6946]">
                   IMG
                 </div>
+                <div>
+                  <p className="text-xs font-bold text-stone-900">{thumbnailFile.name}</p>
+                  <p className="text-[10px] text-stone-500">Image selected</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-bold text-stone-900">closures-preview.jpg</p>
-                <p className="text-[10px] text-stone-500">Image attached</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setThumbnailFile(null)}
+                className="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3 h-3" />
+                <span>Remove</span>
+              </button>
             </div>
-            <button
-              type="button"
-              className="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <Trash2 className="w-3 h-3" />
-              <span>Remove</span>
-            </button>
-          </div>
+          )}
         </div>
 
         {/* Tags */}

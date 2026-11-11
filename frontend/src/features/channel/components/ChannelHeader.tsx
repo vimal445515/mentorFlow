@@ -54,13 +54,13 @@ export const ChannelHeader: FC<ChannelHeaderProps> = ({ onOpenCreateModal }) => 
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <button
+            {/* <button
               type="button"
               className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Edit3 className="w-3.5 h-3.5" />
               <span>Edit Channel</span>
-            </button>
+            </button> */}
             <button
               type="button"
               onClick={onOpenCreateModal}

@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useRef, type FC } from "react";
 import { FileText, Upload, CheckCircle2, Sparkles } from "lucide-react";
 
 interface PdfDocumentFormProps {
@@ -10,6 +10,8 @@ interface PdfDocumentFormProps {
   setSubject: (val: string) => void;
   tags: string;
   setTags: (val: string) => void;
+  documentFile: File | null;
+  setDocumentFile: (file: File | null) => void;
 }
 
 export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
@@ -21,7 +23,11 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
   setSubject,
   tags,
   setTags,
+  documentFile,
+  setDocumentFile,
 }) => {
+  const documentInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
       <div className="flex items-center gap-3 pb-4 border-b border-stone-100">
@@ -60,6 +66,16 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
         {/* PDF File Upload */}
         <div className="space-y-1.5">
           <label className="block text-xs font-bold text-stone-700">PDF / Document File *</label>
+          <input
+            ref={documentInputRef}
+            type="file"
+            accept=".pdf,.doc,.docx,application/pdf"
+            className="sr-only"
+            onChange={(event) => {
+              setDocumentFile(event.currentTarget.files?.[0] ?? null);
+              event.currentTarget.value = "";
+            }}
+          />
           <div className="border-2 border-dashed border-stone-200 rounded-2xl p-6 text-center space-y-3 bg-[#FAF8F5]/50">
             <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
               <Upload className="w-5 h-5" />
@@ -68,31 +84,43 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
               <p className="text-xs font-bold text-stone-900">Upload PDF Study Material</p>
               <p className="text-[11px] text-stone-500">Drag &amp; drop your PDF or DOCX file (up to 50MB)</p>
             </div>
-            <button type="button" className="px-3.5 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs inline-flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => documentInputRef.current?.click()}
+              className="px-3.5 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs inline-flex items-center gap-1.5"
+            >
               <Upload className="w-3.5 h-3.5" />
               <span>Browse Document File</span>
             </button>
           </div>
 
-          <div className="p-4 rounded-xl border border-stone-200 bg-white shadow-xs space-y-3 mt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <FileText className="w-4 h-4 text-purple-600" />
-                <span className="text-xs font-bold text-stone-900">System-Design-Blueprint-v2.pdf</span>
+          {documentFile && (
+            <div className="p-4 rounded-xl border border-stone-200 bg-white shadow-xs space-y-3 mt-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <FileText className="w-4 h-4 text-purple-600 shrink-0" />
+                  <span className="text-xs font-bold text-stone-900 truncate">{documentFile.name}</span>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  <CheckCircle2 className="w-3 h-3" /> Ready
+                </span>
               </div>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                <CheckCircle2 className="w-3 h-3" /> Uploaded
-              </span>
+              <div className="flex items-center justify-between text-[11px] text-stone-500">
+                <span>{(documentFile.size / (1024 * 1024)).toFixed(1)} MB</span>
+                <button
+                  type="button"
+                  onClick={() => setDocumentFile(null)}
+                  className="text-red-600 font-semibold hover:underline"
+                >
+                  Replace file
+                </button>
+              </div>
+              <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                <div className="w-full h-full bg-[#3D6946] rounded-full" />
+              </div>
+              <span className="text-[10px] text-stone-400 block">Selected and ready to upload</span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-stone-500">
-              <span>6.9 MB PDF • 24 Pages</span>
-              <button type="button" className="text-red-600 font-semibold hover:underline">Replace file</button>
-            </div>
-            <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
-              <div className="w-full h-full bg-[#3D6946] rounded-full" />
-            </div>
-            <span className="text-[10px] text-stone-400 block">100% Processed &amp; Ready</span>
-          </div>
+          )}
         </div>
 
         {/* AI Learning Assistant Integration Callout */}

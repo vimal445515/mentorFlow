@@ -6,8 +6,17 @@ import { MentorSidebar } from "../../profile/components/MentorSidebar";
 import { TextArticleForm } from "../components/TextArticleForm";
 import { VideoForm } from "../components/VideoForm";
 import { PdfDocumentForm } from "../components/PdfDocumentForm";
+import { createChannelPost } from "../api/channelContentApi";
+import type { CreateChannelPostInput } from "../types/channelContent.types";
 import { useToast } from "@/shared/components/Toast";
 import { useMentorLogout } from "@/shared/hooks/useMentorLogout";
+
+function parseTags(value: string): string[] {
+  return value
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
 
 export const CreateChannelContentPage: FC = () => {
   const navigate = useNavigate();
@@ -19,8 +28,9 @@ export const CreateChannelContentPage: FC = () => {
     : "/mentor/channel";
   const handleBackToChannel = () => navigate(channelDetailsPath);
 
-  const [contentType, setContentType] = useState<"TEXT" | "VIDEO" | "PDF">("TEXT");
+  const [contentType, setContentType] = useState<"TEXT" | "VIDEO" | "DOCUMENT">("TEXT");
   const [saving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Form States
   const [title, setTitle] = useState("");
@@ -29,6 +39,10 @@ export const CreateChannelContentPage: FC = () => {
   const [category, setCategory] = useState("Backend Engineering");
   const [subject, setSubject] = useState("");
   const [tags, setTags] = useState("");
+  const [articleThumbnail, setArticleThumbnail] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoThumbnail, setVideoThumbnail] = useState<File | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
 
   const handlePublish = async () => {
     if (!title.trim()) {
@@ -36,10 +50,67 @@ export const CreateChannelContentPage: FC = () => {
       return;
     }
 
+    if (!channelId) {
+      showToast("Open a channel before publishing content.", "error");
+      return;
+    }
+
+    let input: CreateChannelPostInput;
+    if (contentType === "TEXT") {
+      if (!content.trim()) {
+        showToast("Please provide article content.", "error");
+        return;
+      }
+      input = {
+        type: "TEXT",
+        title: title.trim(),
+        content: content.trim(),
+        tags: parseTags(tags),
+        thumbnail: articleThumbnail ?? undefined,
+      };
+    } else if (contentType === "VIDEO") {
+      if (!description.trim() || !videoFile) {
+        showToast("Please provide a video description and select a video file.", "error");
+        return;
+      }
+      if (videoFile.size > 2 * 1024 * 1024 * 1024) {
+        showToast("The video file must be 2 GB or smaller.", "error");
+        return;
+      }
+      input = {
+        type: "VIDEO",
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        tags: parseTags(tags),
+        file: videoFile,
+        thumbnail: videoThumbnail ?? undefined,
+      };
+    } else {
+      if (!description.trim() || !subject.trim() || !documentFile) {
+        showToast("Please complete the document details and select a file.", "error");
+        return;
+      }
+      if (documentFile.size > 50 * 1024 * 1024) {
+        showToast("The document file must be 50 MB or smaller.", "error");
+        return;
+      }
+      input = {
+        type: "DOCUMENT",
+        title: title.trim(),
+        description: description.trim(),
+        subject: subject.trim(),
+        tags: parseTags(tags),
+        file: documentFile,
+      };
+    }
+
     setSaving(true);
+    setUploadProgress(0);
     try {
-      await new Promise((res) => setTimeout(res, 800));
+      await createChannelPost(channelId, input, setUploadProgress);
       showToast("Channel content published successfully!", "success", "Published");
+      navigate(channelDetailsPath);
     } catch (error: unknown) {
       showToast(
         error instanceof Error ? error.message : "Failed to publish content",
@@ -143,14 +214,14 @@ export const CreateChannelContentPage: FC = () => {
               {/* Card 3: PDF / Document */}
               <button
                 type="button"
-                onClick={() => setContentType("PDF")}
+                onClick={() => setContentType("DOCUMENT")}
                 className={`p-5 rounded-2xl border text-left transition-all cursor-pointer relative flex flex-col justify-between ${
-                  contentType === "PDF"
+                  contentType === "DOCUMENT"
                     ? "border-[#3D6946] bg-white ring-1 ring-[#3D6946] shadow-xs"
                     : "border-stone-200 bg-white hover:border-stone-300"
                 }`}
               >
-                {contentType === "PDF" && (
+                {contentType === "DOCUMENT" && (
                   <div className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-[#3D6946]" />
                 )}
                 <div className="space-y-3">
@@ -177,6 +248,8 @@ export const CreateChannelContentPage: FC = () => {
               setContent={setContent}
               tags={tags}
               setTags={setTags}
+              thumbnailFile={articleThumbnail}
+              setThumbnailFile={setArticleThumbnail}
             />
           )}
 
@@ -190,10 +263,14 @@ export const CreateChannelContentPage: FC = () => {
               setCategory={setCategory}
               tags={tags}
               setTags={setTags}
+              videoFile={videoFile}
+              setVideoFile={setVideoFile}
+              thumbnailFile={videoThumbnail}
+              setThumbnailFile={setVideoThumbnail}
             />
           )}
 
-          {contentType === "PDF" && (
+          {contentType === "DOCUMENT" && (
             <PdfDocumentForm
               title={title}
               setTitle={setTitle}
@@ -203,6 +280,8 @@ export const CreateChannelContentPage: FC = () => {
               setSubject={setSubject}
               tags={tags}
               setTags={setTags}
+              documentFile={documentFile}
+              setDocumentFile={setDocumentFile}
             />
           )}
 
@@ -223,7 +302,13 @@ export const CreateChannelContentPage: FC = () => {
               className="px-6 py-2.5 rounded-xl bg-[#3D6946] hover:bg-[#32573a] text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
-              <span>{saving ? "Publishing..." : "Publish Content"}</span>
+              <span>
+                {saving
+                  ? uploadProgress > 0
+                    ? `Uploading ${uploadProgress}%...`
+                    : "Publishing..."
+                  : "Publish Content"}
+              </span>
             </button>
           </div>
         </main>
