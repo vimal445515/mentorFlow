@@ -142,7 +142,7 @@ export const MentorProfilePage: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans text-stone-900">
+    <div className="h-screen overflow-hidden bg-[#FAF8F5] flex flex-col font-sans text-stone-900">
       {/* Top Bar */}
       <ProfileTopBar
         role="MENTOR"
@@ -152,12 +152,12 @@ export const MentorProfilePage: FC = () => {
         actionName="view profile"
       />
 
-      <div className="flex-1 flex">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Navigation Sidebar */}
         <MentorSidebar activeItem="Profile" />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6 sm:p-10 max-w-5xl mx-auto space-y-6 w-full overflow-y-auto">
+        <main className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto p-6 sm:p-10 max-w-5xl mx-auto space-y-6 w-full">
           {/* Header Title & Verification Badge */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>

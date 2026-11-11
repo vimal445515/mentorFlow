@@ -82,6 +82,18 @@ export const ChannelsPage = lazy(() =>
   import("@/features/channel/pages/listAllChannelsPage").then((m) => ({ default: m.ChannelsPage })),
 );
 
+export const ChannelDetailPage = lazy(() =>
+  import("@/features/channel/pages/ChannelDetailPage").then((m) => ({
+    default: m.ChannelDetailPage,
+  })),
+);
+
+export const CreateChannelContentPage = lazy(() =>
+  import("@/features/channel/pages/createChannelContent").then((m) => ({
+    default: m.CreateChannelContentPage,
+  })),
+);
+
 // Standalone pages
 export const NotFoundPage = lazy(() => import("@/shared/pages/NotFound"));
 export const UnauthorizedPage = lazy(() => import("@/shared/pages/UnauthorizedPage"));

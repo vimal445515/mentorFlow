@@ -28,7 +28,7 @@ export const MentorSkillsPage: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col font-sans">
+    <div className="h-screen overflow-hidden bg-stone-50 flex flex-col font-sans">
       <Modal
         isOpen={isAddSkillModalOpen}
         onClose={() => setIsAddSkillModalOpen(false)}
@@ -50,9 +50,9 @@ export const MentorSkillsPage: FC = () => {
         actionName="Add New Skill"
       />
 
-      <div className="flex flex-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <MentorSidebar activeItem="skills" />
-        <main className="flex-1 flex flex-col">
+        <main className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto flex flex-col">
           <SkillsManager
             skills={skills}
             isLoading={isLoading}

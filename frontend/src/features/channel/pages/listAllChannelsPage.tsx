@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { ProfileTopBar } from "@/features/profile/components/ProfileTopBar";
 import { MentorSidebar } from "@/features/profile/components/MentorSidebar";
 import { useMentorLogout } from "@/shared/hooks/useMentorLogout";
 import { DataTable } from "@/shared/components/DataTable/DataTable";
 import type { DataTableProps } from "@/shared/components/DataTable/types";
-import { ChannelModal } from "../componets/ChannelModal";
+import { ChannelModal } from "../components/ChannelModal";
 import { Pagination } from "@/shared/components/pagination";
 import {
   createChannel,
@@ -47,6 +48,7 @@ const avatarClasses = [
 ];
 
 export const ChannelsPage: React.FC = () => {
+  const navigate = useNavigate();
   const handleLogoutClick = useMentorLogout();
   const { showToast } = useToast();
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -282,6 +284,15 @@ export const ChannelsPage: React.FC = () => {
         <div className="flex justify-end gap-2">
           <button
             type="button"
+            onClick={() =>
+              navigate(`/mentor/channel/${encodeURIComponent(channel.channelId)}`)
+            }
+            className="flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100"
+          >
+            <Eye className="h-3 w-3" /> View
+          </button>
+          <button
+            type="button"
             onClick={() => {
               setEditingChannel(channel);
               setIsChannelModalOpen(true);
@@ -326,26 +337,26 @@ export const ChannelsPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="h-screen overflow-hidden bg-slate-50 font-sans text-slate-900 flex flex-col">
       <ProfileTopBar
         role="MENTOR"
         pageTitle="Channels"
         onLogout={handleLogoutClick}
       />
-      <div className="flex min-h-[calc(100vh-65px)]">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <MentorSidebar activeItem="Channel" />
-        <main className="mx-auto w-full max-w-6xl min-w-0 p-6">
+        <main className="scrollbar-hidden mx-auto min-h-0 w-full max-w-6xl min-w-0 overflow-y-auto p-6">
           <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-xl font-bold text-slate-900">
               My Hosted Channels
             </h1>
             <div className="flex items-center gap-3">
-              <a
-                href="create-content.html"
+              <Link
+                to="/mentor/channel/create-content"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#2D6946] px-3 py-2 text-xs font-semibold text-white transition-colors hover:opacity-90"
               >
                 <Plus className="h-4 w-4" /> Create Content
-              </a>
+              </Link>
               <button
                 type="button"
                 onClick={() => {

@@ -152,11 +152,11 @@ export const AvailabilityPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] font-sans">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#FAF8F5] font-sans">
       <ProfileTopBar role="MENTOR" pageTitle="Availability" onLogout={handleLogoutClick} />
-      <div className="flex min-h-[calc(100vh-64px)]">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <MentorSidebar activeItem="Availability" />
-        <main className="min-w-0 flex-1 p-4 text-stone-900 md:p-8">
+        <main className="scrollbar-hidden min-h-0 min-w-0 flex-1 overflow-y-auto p-4 text-stone-900 md:p-8">
           <div className="mx-auto max-w-4xl">
             <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>

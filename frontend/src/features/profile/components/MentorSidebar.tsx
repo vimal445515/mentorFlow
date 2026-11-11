@@ -44,9 +44,9 @@ export const MentorSidebar: FC<MentorSidebarProps> = ({ activeItem = "Profile" }
   ];
 
   return (
-    <aside className="w-64 shrink-0 bg-white border-r border-[#EBE6DF] min-h-[calc(100vh-65px)] flex flex-col justify-between py-6 px-4">
+    <aside className="sticky top-0 flex h-full w-64 shrink-0 flex-col justify-between overflow-hidden border-r border-[#EBE6DF] bg-white px-4 py-6">
       {/* Navigation Links */}
-      <nav className="space-y-1 overflow-y-auto pr-1">
+      <nav className="scrollbar-hidden min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeItem === item.id;

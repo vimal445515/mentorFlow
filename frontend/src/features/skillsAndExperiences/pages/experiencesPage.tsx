@@ -57,7 +57,7 @@ export const MentorExperiencePage: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col font-sans">
+    <div className="h-screen overflow-hidden bg-stone-50 flex flex-col font-sans">
       <Modal
         isOpen={isFormOpen}
         onClose={closeForm}
@@ -83,9 +83,9 @@ export const MentorExperiencePage: FC = () => {
         actionName="Add experience"
       />
 
-      <div className="flex flex-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <MentorSidebar activeItem="experience" />
-        <main className="flex flex-1 flex-col">
+        <main className="scrollbar-hidden min-h-0 flex flex-1 flex-col overflow-y-auto">
           <ExperiencesManager
             experiences={experiences}
             isLoading={isLoading}
