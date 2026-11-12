@@ -39,3 +39,22 @@ export interface ChannelListResponse {
     totalPages: number;
   };
 }
+
+export interface PublicChannel extends Channel {
+  mentor: {
+    fullName: string;
+    headline: string | null;
+    profileImageUrl: string | null;
+    followerCount: number;
+  };
+  postsCount: number;
+  latestPost: {
+    title: string;
+    publishedAt: string;
+  } | null;
+}
+
+export interface PublicChannelListResponse
+  extends Omit<ChannelListResponse, "channels"> {
+  channels: PublicChannel[];
+}

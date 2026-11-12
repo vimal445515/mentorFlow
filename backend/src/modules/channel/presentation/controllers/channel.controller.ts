@@ -5,6 +5,7 @@ import { HttpStatusCode } from "../../../../shared/constant/HttpStatusCode.ts";
 import { ResponseHandler } from "../../../../shared/response/responseHandler.ts";
 import type { ICreateChannelUseCase } from "../../domain/interfaces/useCase/ICreateChannelUseCase.ts";
 import type { IListChannelsUseCase } from "../../domain/interfaces/useCase/IListChannelsUseCase.ts";
+import type { IListPublicChannelsUseCase } from "../../domain/interfaces/useCase/IListPublicChannelsUseCase.ts";
 import type { IUpdateChannelUseCase } from "../../domain/interfaces/useCase/IUpdateChannelUseCase.ts";
 import type { IDeleteChannelUseCase } from "../../domain/interfaces/useCase/IDeleteChannelUseCase.ts";
 import type { IGetChannelUseCase } from "../../domain/interfaces/useCase/IGetChannelUseCase.ts";
@@ -16,6 +17,7 @@ export class ChannelController {
   constructor(
     private readonly createChannelUseCase: ICreateChannelUseCase,
     private readonly listChannelsUseCase: IListChannelsUseCase,
+    private readonly listPublicChannelsUseCase: IListPublicChannelsUseCase,
     private readonly updateChannelUseCase: IUpdateChannelUseCase,
     private readonly deleteChannelUseCase: IDeleteChannelUseCase,
     private readonly getChannelUseCase: IGetChannelUseCase,
@@ -41,6 +43,13 @@ export class ChannelController {
       query,
     );
     ResponseHandler.success(res, "Channels fetched successfully.", result);
+  }
+
+  async listPublic(req: AuthenticatedRequest, res: Response): Promise<void> {
+    this.assertStudent(req);
+    const query = parseChannelListQuery(req.query);
+    const result = await this.listPublicChannelsUseCase.execute(query);
+    ResponseHandler.success(res, "Public channels fetched successfully.", result);
   }
 
   async get(req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -79,6 +88,18 @@ export class ChannelController {
       );
     }
     return req.user.userId;
+  }
+
+  private assertStudent(req: AuthenticatedRequest): void {
+    if (!req.user?.userId) {
+      throw new AppError("Unauthorized.", HttpStatusCode.UNAUTHORIZED);
+    }
+    if (req.user.role !== "STUDENT") {
+      throw new AppError(
+        "Only students can view public channels.",
+        HttpStatusCode.FORBIDDEN,
+      );
+    }
   }
 
   private getChannelId(req: AuthenticatedRequest): string {

@@ -6,7 +6,9 @@ import type {
   ChannelListCriteria,
   ChannelListResult,
   IChannelRepository,
+  PublicChannelListResult,
 } from "../../domain/repositories/IChannelRepository.ts";
+import { ChannelStatus } from "../../domain/enums/ChannelStatus.ts";
 import { ChannelMapper } from "../mappers/ChannelMapper.ts";
 
 @injectable()
@@ -37,6 +39,92 @@ export class PrismaChannelRepository implements IChannelRepository {
         : {}),
       ...(query.status ? { status: query.status } : {}),
     };
+    return this.list(where, query);
+  }
+
+  async listPublic(query: ChannelListCriteria): Promise<PublicChannelListResult> {
+    const where: Prisma.ChannelWhereInput = {
+      isDeleted: false,
+      status: ChannelStatus.ACTIVE,
+      ...(query.search
+        ? { name: { contains: query.search, mode: "insensitive" } }
+        : {}),
+    };
+    const primaryOrder: Prisma.ChannelOrderByWithRelationInput =
+      query.sortBy === "name"
+        ? { name: query.sortOrder }
+        : { createdAt: query.sortOrder };
+    const orderBy: Prisma.ChannelOrderByWithRelationInput[] = [
+      primaryOrder,
+      { channelId: "asc" },
+    ];
+    const [records, total] = await prisma.$transaction([
+      prisma.channel.findMany({
+        where,
+        include: {
+          mentor: {
+            select: {
+              headline: true,
+              followerCount: true,
+              user: {
+                select: {
+                  fullName: true,
+                  profileImageUrl: true,
+                },
+              },
+            },
+          },
+          posts: {
+            where: { status: "published" },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            take: 1,
+            select: {
+              title: true,
+              publishedAt: true,
+              createdAt: true,
+            },
+          },
+          _count: {
+            select: {
+              posts: { where: { status: "published" } },
+            },
+          },
+        },
+        orderBy,
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      prisma.channel.count({ where }),
+    ]);
+
+    return {
+      channels: records.map((record) => {
+        const latestPost = record.posts[0];
+        return {
+          channel: ChannelMapper.fromDb(record),
+          mentor: {
+            fullName: record.mentor.user.fullName,
+            headline: record.mentor.headline,
+            profileImageUrl: record.mentor.user.profileImageUrl,
+            followerCount: record.mentor.followerCount,
+          },
+          postsCount: record._count.posts,
+          latestPost: latestPost
+            ? {
+                title: latestPost.title,
+                publishedAt: latestPost.publishedAt ?? latestPost.createdAt,
+              }
+            : null,
+        };
+      }),
+      total,
+    };
+  }
+
+  private async list(
+    where: Prisma.ChannelWhereInput,
+    query: ChannelListCriteria,
+  ): Promise<ChannelListResult> {
     const primaryOrder: Prisma.ChannelOrderByWithRelationInput =
       query.sortBy === "name"
         ? { name: query.sortOrder }

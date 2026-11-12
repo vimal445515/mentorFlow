@@ -10,6 +10,7 @@ import {
   Crown,
   Bell,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/app/store/hooks";
 
 interface StudentSidebarProps {
@@ -21,6 +22,7 @@ export const StudentSidebar: FC<StudentSidebarProps> = ({
   activeItem = "My Profile",
   onSelectItem,
 }) => {
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const userName = user?.fullName || "Alex Morgan";
   const avatarUrl = user?.profileImageUrl;
@@ -30,7 +32,7 @@ export const StudentSidebar: FC<StudentSidebarProps> = ({
     { id: "Roadmaps", label: "Roadmaps", icon: Compass },
     { id: "Find Mentor", label: "Find Mentor", icon: Users },
     { id: "My Sessions", label: "My Sessions", icon: Video },
-    { id: "Channels", label: "Channels", icon: Megaphone },
+    { id: "Channels", label: "Channels", icon: Megaphone, path: "/student/channels" },
     { id: "Following", label: "Following", icon: Heart },
     { id: "Badges & Progress", label: "Badges & Progress", icon: Award },
     { id: "Subscriptions", label: "Subscriptions", icon: Crown },
@@ -47,11 +49,19 @@ export const StudentSidebar: FC<StudentSidebarProps> = ({
           return (
             <button
               key={item.id}
-              onClick={() => onSelectItem?.(item.id)}
-              className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer text-left ${
+              type="button"
+              disabled={!item.path}
+              onClick={() => {
+                onSelectItem?.(item.id);
+                if (item.path) navigate(item.path);
+              }}
+              title={item.path ? undefined : "This page is not available yet"}
+              className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
                 isActive
                   ? "bg-[#FDF0EC] text-[#C85A32] font-semibold"
-                  : "text-stone-600 hover:text-stone-900 hover:bg-[#FAF8F5]"
+                  : item.path
+                    ? "text-stone-600 hover:text-stone-900 hover:bg-[#FAF8F5] cursor-pointer"
+                    : "text-stone-400 cursor-not-allowed"
               }`}
             >
               <Icon

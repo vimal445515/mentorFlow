@@ -5,17 +5,33 @@ import type {
   ChannelInput,
   ChannelListQuery,
   ChannelListResponse,
+  PublicChannelListResponse,
 } from "../types/channel.types";
 
 export async function listChannels(
   query: ChannelListQuery,
+  signal?: AbortSignal,
 ): Promise<ChannelListResponse> {
-  const response = await api.get<ApiResponse<ChannelListResponse>>(
-    ENDPOINTS.CHANNELS.LIST,
-    { params: query },
-  );
+  const response = await api.get<ApiResponse<ChannelListResponse>>(ENDPOINTS.CHANNELS.LIST, {
+    params: query,
+    signal,
+  });
   if (!Array.isArray(response.data.data?.channels)) {
     throw new Error("Unexpected response while loading channels.");
+  }
+  return response.data.data;
+}
+
+export async function listPublicChannels(
+  query: Omit<ChannelListQuery, "status">,
+  signal?: AbortSignal,
+): Promise<PublicChannelListResponse> {
+  const response = await api.get<ApiResponse<PublicChannelListResponse>>(
+    ENDPOINTS.CHANNELS.PUBLIC,
+    { params: query, signal },
+  );
+  if (!Array.isArray(response.data.data?.channels)) {
+    throw new Error("Unexpected response while loading public channels.");
   }
   return response.data.data;
 }

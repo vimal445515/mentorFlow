@@ -17,6 +17,26 @@ export interface ChannelListResult {
   total: number;
 }
 
+export interface PublicChannelSummary {
+  channel: Channel;
+  mentor: {
+    fullName: string;
+    headline: string | null;
+    profileImageUrl: string | null;
+    followerCount: number;
+  };
+  postsCount: number;
+  latestPost: {
+    title: string;
+    publishedAt: Date;
+  } | null;
+}
+
+export interface PublicChannelListResult {
+  channels: PublicChannelSummary[];
+  total: number;
+}
+
 export interface IChannelRepository {
   createForMentor(mentorId: string, channel: Channel): Promise<Channel>;
   findForMentor(mentorId: string, channelId: string): Promise<Channel | null>;
@@ -24,6 +44,7 @@ export interface IChannelRepository {
     mentorId: string,
     query: ChannelListCriteria,
   ): Promise<ChannelListResult>;
+  listPublic(query: ChannelListCriteria): Promise<PublicChannelListResult>;
   updateForMentor(
     mentorId: string,
     channelId: string,

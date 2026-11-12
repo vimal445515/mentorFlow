@@ -4,6 +4,7 @@ import type { IChannelRepository } from "../../modules/channel/domain/repositori
 import { PrismaChannelRepository } from "../../modules/channel/infrastructure/repositories/PrismaChannelRepository.ts";
 import { CreateChannelUseCase } from "../../modules/channel/application/useCase/CreateChannelUseCase.ts";
 import { ListChannelsUseCase } from "../../modules/channel/application/useCase/ListChannelsUseCase.ts";
+import { ListPublicChannelsUseCase } from "../../modules/channel/application/useCase/ListPublicChannelsUseCase.ts";
 import { UpdateChannelUseCase } from "../../modules/channel/application/useCase/UpdateChannelUseCase.ts";
 import { DeleteChannelUseCase } from "../../modules/channel/application/useCase/DeleteChannelUseCase.ts";
 import { GetChannelUseCase } from "../../modules/channel/application/useCase/GetChannelUseCase.ts";
@@ -29,6 +30,7 @@ export const bindChannels = (container: Container) => {
   const controller = new ChannelController(
     new CreateChannelUseCase(channelRepository),
     new ListChannelsUseCase(channelRepository),
+    new ListPublicChannelsUseCase(channelRepository),
     new UpdateChannelUseCase(channelRepository),
     new DeleteChannelUseCase(channelRepository),
     new GetChannelUseCase(channelRepository),

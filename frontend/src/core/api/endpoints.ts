@@ -26,6 +26,7 @@ export const ENDPOINTS = {
   },
   CHANNELS: {
     LIST: "/channels",
+    PUBLIC: "/channels/public",
     CREATE: "/channels",
     BY_ID: (channelId: string) => `/channels/${encodeURIComponent(channelId)}`,
   },

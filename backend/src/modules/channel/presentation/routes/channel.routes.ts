@@ -21,6 +21,11 @@ export function createChannelRoutes(
     authMiddleware,
     asyncHandler(postController.list.bind(postController)),
   );
+  router.get(
+    "/public",
+    authMiddleware,
+    asyncHandler(controller.listPublic.bind(controller)),
+  );
   router.post(
     "/:channelId/posts",
     authMiddleware,

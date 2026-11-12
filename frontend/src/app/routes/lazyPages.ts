@@ -54,6 +54,12 @@ export const StudentProfilePage = lazy(() =>
   })),
 );
 
+export const StudentChannelsPage = lazy(() =>
+  import("@/features/channel/pages/studentChannelsPage").then((m) => ({
+    default: m.StudentChannelsPage,
+  })),
+);
+
 export const MentorProfilePage = lazy(() =>
   import("@/features/profile/pages/MentorProfilePage").then((m) => ({
     default: m.MentorProfilePage,
