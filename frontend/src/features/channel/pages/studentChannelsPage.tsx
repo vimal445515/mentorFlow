@@ -151,6 +151,13 @@ export const StudentChannelsPage: FC = () => {
   const firstItem = totalChannels === 0 ? 0 : (currentPage - 1) * CHANNELS_PER_PAGE + 1;
   const lastItem = Math.min(currentPage * CHANNELS_PER_PAGE, totalChannels);
 
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    setCurrentPage(page);
+    setIsLoading(true);
+    setLoadError(null);
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F7F5F0] font-sans text-[#1F1E1C]">
       <ProfileTopBar role="STUDENT" pageTitle="Channels" onLogout={handleLogoutClick} />
@@ -345,11 +352,7 @@ export const StudentChannelsPage: FC = () => {
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={(page) => {
-                      setCurrentPage(page);
-                      setIsLoading(true);
-                      setLoadError(null);
-                    }}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               )}
