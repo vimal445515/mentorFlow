@@ -9,6 +9,20 @@ import type {
 
 type ChannelPostUploadProgress = (progress: number) => void;
 
+export async function listChannelPosts(
+  channelId: string,
+  signal?: AbortSignal,
+): Promise<ChannelPost[]> {
+  const response = await api.get<ApiResponse<ChannelPost[]>>(
+    ENDPOINTS.CHANNEL_POSTS.BY_CHANNEL(channelId),
+    { signal },
+  );
+  if (!response.data.data) {
+    throw new Error("The server did not return the channel posts.");
+  }
+  return response.data.data;
+}
+
 function toFormData(input: CreateChannelPostInput | UpdateChannelPostInput): FormData {
   const formData = new FormData();
   formData.append("type", input.type);
@@ -39,7 +53,7 @@ function toFormData(input: CreateChannelPostInput | UpdateChannelPostInput): For
 
 function getUploadConfig(onProgress?: ChannelPostUploadProgress) {
   return {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": undefined },
     onUploadProgress: (event: AxiosProgressEvent) => {
       if (event.total && onProgress) {
         onProgress(Math.round((event.loaded / event.total) * 100));

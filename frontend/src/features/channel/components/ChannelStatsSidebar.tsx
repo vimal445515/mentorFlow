@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { Users, FileText, BarChart3, HelpCircle, Plus } from "lucide-react";
+import { Users, FileText, BarChart3 } from "lucide-react";
 
 export const ChannelStatsSidebar: FC = () => {
   return (

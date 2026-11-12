@@ -62,6 +62,7 @@ model mentorProfile {
   teachingSubjects  String? 
   availabilitySlots AvailabilitySlot[]
   channels Channel[]
+  channelPosts ChannelPost[]
 
   user User @relation(fields: [mentorId], references: [id], onDelete: Cascade)
 }
@@ -150,7 +151,54 @@ model Channel {
   updatedAt   DateTime @updatedAt
 
   mentor mentorProfile @relation(fields: [mentorId], references: [mentorId], onDelete: Cascade)
+  posts  ChannelPost[]
 
   @@index([mentorId, createdAt])
   @@index([mentorId, name])
+}
+
+
+
+
+enum ChannelPostType {
+  article
+  video
+  document
+}
+
+enum ChannelPostStatus {
+  draft
+  published
+}
+
+model ChannelPost {
+  postId      String            @id @default(uuid())
+  channelId   String
+  mentorId    String
+  type        ChannelPostType
+  title       String
+  content     String?
+  description String?
+  category    String?
+  subject     String?
+  tags        String[]          @default([])
+  mediaKey    String?
+  mediaName   String?
+  mediaMimeType String?
+  thumbnailKey String?
+  thumbnailName String?
+  thumbnailMimeType String?
+  status      ChannelPostStatus @default(published)
+  viewCount   Int               @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  channel     Channel           @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
+  mentor      mentorProfile     @relation(fields: [mentorId], references: [mentorId], onDelete: Cascade)
+
+  @@index([channelId, createdAt])
+  @@index([mentorId, createdAt])
+  @@index([status])
+  @@index([type])
 }

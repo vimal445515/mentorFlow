@@ -14,6 +14,7 @@ interface VideoFormProps {
   setVideoFile: (file: File | null) => void;
   thumbnailFile: File | null;
   setThumbnailFile: (file: File | null) => void;
+  isEditing?: boolean;
 }
 
 export const VideoForm: FC<VideoFormProps> = ({
@@ -29,6 +30,7 @@ export const VideoForm: FC<VideoFormProps> = ({
   setVideoFile,
   thumbnailFile,
   setThumbnailFile,
+  isEditing = false,
 }) => {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -72,7 +74,9 @@ export const VideoForm: FC<VideoFormProps> = ({
 
         {/* Video File Upload */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-stone-700">Video File *</label>
+          <label className="block text-xs font-bold text-stone-700">
+            Video File {isEditing ? "(optional)" : "*"}
+          </label>
           <input
             ref={videoInputRef}
             type="file"
@@ -90,7 +94,8 @@ export const VideoForm: FC<VideoFormProps> = ({
             <div className="space-y-0.5">
               <p className="text-xs font-bold text-stone-900">Upload Educational Video</p>
               <p className="text-[11px] text-stone-500">
-                Drag &amp; drop your MP4, WebM, or MOV video here (up to 2GB)
+                Drag &amp; drop your MP4, WebM, or MOV video here (up to 2GB).{" "}
+                {isEditing && "Leave empty to keep the current video."}
               </p>
             </div>
             <button
@@ -108,7 +113,9 @@ export const VideoForm: FC<VideoFormProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <Video className="w-4 h-4 text-[#3D6946] shrink-0" />
-                  <span className="text-xs font-bold text-stone-900 truncate">{videoFile.name}</span>
+                  <span className="text-xs font-bold text-stone-900 truncate">
+                    {videoFile.name}
+                  </span>
                 </div>
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   <CheckCircle2 className="w-3 h-3" /> Ready for publishing

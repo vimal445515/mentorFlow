@@ -1,17 +1,11 @@
 import type { FC, ReactNode } from "react";
-import {
-  ShieldCheck,
-  Heart,
-  MessageSquare,
-  Share2,
-  Edit,
-  Eye,
-  Download,
-} from "lucide-react";
+import { ShieldCheck, Heart, MessageSquare, Share2, Edit, Eye, Download } from "lucide-react";
 
 interface ChannelFeedCardProps {
   authorName: string;
   authorRole: string;
+  authorImageUrl?: string;
+  isAuthorVerified?: boolean;
   timestamp: string;
   badgeLabel: string;
   badgeColor?: "emerald" | "orange" | "purple" | "amber";
@@ -23,11 +17,16 @@ interface ChannelFeedCardProps {
   viewsCount?: number;
   downloadsCount?: number;
   children?: ReactNode; // For embedded media (Video, code preview, PDF attachment)
+  onEdit?: () => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }
 
 export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
   authorName,
   authorRole,
+  authorImageUrl,
+  isAuthorVerified = false,
   timestamp,
   badgeLabel,
   badgeColor = "emerald",
@@ -39,6 +38,9 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
   viewsCount,
   downloadsCount,
   children,
+  onEdit,
+  onDelete,
+  isDeleting = false,
 }) => {
   const badgeStyles = {
     emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -52,15 +54,24 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
       {/* Author & Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
-            alt={authorName}
-            className="w-10 h-10 rounded-full object-cover border border-stone-200"
-          />
+          {authorImageUrl ? (
+            <img
+              src={authorImageUrl}
+              alt={authorName}
+              className="w-10 h-10 rounded-full object-cover border border-stone-200"
+            />
+          ) : (
+            <div
+              aria-label={authorName}
+              className="w-10 h-10 rounded-full border border-stone-200 bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-600"
+            >
+              {authorName.trim().charAt(0).toUpperCase() || "M"}
+            </div>
+          )}
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-stone-900">{authorName}</span>
-              <ShieldCheck className="w-3.5 h-3.5 text-[#3D6946]" />
+              {isAuthorVerified && <ShieldCheck className="w-3.5 h-3.5 text-[#3D6946]" />}
             </div>
             <p className="text-[10px] text-stone-500">
               {timestamp} • {authorRole}
@@ -136,6 +147,7 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
           </button>
           <button
             type="button"
+            onClick={onEdit}
             className="px-3 py-1.5 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold flex items-center gap-1 transition-colors cursor-pointer"
           >
             <Edit className="w-3 h-3" />
@@ -143,9 +155,11 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
           </button>
           <button
             type="button"
-            className="px-3 py-1.5 rounded-xl border border-stone-200 hover:bg-red-50 text-red-600 font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+            onClick={onDelete}
+            disabled={isDeleting}
+            className="px-3 py-1.5 rounded-xl border border-stone-200 hover:bg-red-50 text-red-600 font-semibold flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
           >
-            <span>Unpublish</span>
+            <span>{isDeleting ? "Deleting..." : "Delete"}</span>
           </button>
         </div>
       </div>

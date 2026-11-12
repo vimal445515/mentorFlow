@@ -12,6 +12,9 @@ interface PdfDocumentFormProps {
   setTags: (val: string) => void;
   documentFile: File | null;
   setDocumentFile: (file: File | null) => void;
+  thumbnailFile: File | null;
+  setThumbnailFile: (file: File | null) => void;
+  isEditing?: boolean;
 }
 
 export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
@@ -25,8 +28,12 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
   setTags,
   documentFile,
   setDocumentFile,
+  thumbnailFile,
+  setThumbnailFile,
+  isEditing = false,
 }) => {
   const documentInputRef = useRef<HTMLInputElement>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <section className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
@@ -36,7 +43,9 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
         </div>
         <div>
           <h3 className="text-sm font-bold text-stone-900">Upload PDF / Document</h3>
-          <p className="text-xs text-stone-500">Share curriculum notes, architectural blueprints, cheat sheets, and syllabi.</p>
+          <p className="text-xs text-stone-500">
+            Share curriculum notes, architectural blueprints, cheat sheets, and syllabi.
+          </p>
         </div>
       </div>
 
@@ -65,11 +74,13 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
 
         {/* PDF File Upload */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-stone-700">PDF / Document File *</label>
+          <label className="block text-xs font-bold text-stone-700">
+            PDF File {isEditing ? "(optional)" : "*"}
+          </label>
           <input
             ref={documentInputRef}
             type="file"
-            accept=".pdf,.doc,.docx,application/pdf"
+            accept=".pdf,application/pdf"
             className="sr-only"
             onChange={(event) => {
               setDocumentFile(event.currentTarget.files?.[0] ?? null);
@@ -82,7 +93,10 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
             </div>
             <div className="space-y-0.5">
               <p className="text-xs font-bold text-stone-900">Upload PDF Study Material</p>
-              <p className="text-[11px] text-stone-500">Drag &amp; drop your PDF or DOCX file (up to 50MB)</p>
+              <p className="text-[11px] text-stone-500">
+                Select a PDF file (up to 50MB).{" "}
+                {isEditing && "Leave empty to keep the current PDF."}
+              </p>
             </div>
             <button
               type="button"
@@ -94,12 +108,47 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
             </button>
           </div>
 
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-stone-700">
+              Thumbnail Image (optional)
+            </label>
+            <input
+              ref={thumbnailInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="sr-only"
+              onChange={(event) => {
+                setThumbnailFile(event.currentTarget.files?.[0] ?? null);
+                event.currentTarget.value = "";
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => thumbnailInputRef.current?.click()}
+              className="px-3.5 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs inline-flex items-center gap-1.5"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>{thumbnailFile ? thumbnailFile.name : "Choose Image File"}</span>
+            </button>
+            {thumbnailFile && (
+              <button
+                type="button"
+                onClick={() => setThumbnailFile(null)}
+                className="ml-3 text-red-600 text-xs font-semibold hover:underline"
+              >
+                Remove selected image
+              </button>
+            )}
+          </div>
+
           {documentFile && (
             <div className="p-4 rounded-xl border border-stone-200 bg-white shadow-xs space-y-3 mt-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <FileText className="w-4 h-4 text-purple-600 shrink-0" />
-                  <span className="text-xs font-bold text-stone-900 truncate">{documentFile.name}</span>
+                  <span className="text-xs font-bold text-stone-900 truncate">
+                    {documentFile.name}
+                  </span>
                 </div>
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   <CheckCircle2 className="w-3 h-3" /> Ready
@@ -127,9 +176,13 @@ export const PdfDocumentForm: FC<PdfDocumentFormProps> = ({
         <div className="flex items-start gap-3 p-4 rounded-xl border border-purple-200 bg-purple-50/40">
           <Sparkles className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <h4 className="text-xs font-bold text-stone-900">AI Learning Assistant Context Integration</h4>
+            <h4 className="text-xs font-bold text-stone-900">
+              AI Learning Assistant Context Integration
+            </h4>
             <p className="text-[11px] text-stone-600 leading-relaxed">
-              AI learning assistant can use this material for contextual answers. When published, this document is automatically indexed into your channel&apos;s AI Knowledge Base so your AI Copilot can answer student inquiries with citation references.
+              AI learning assistant can use this material for contextual answers. When published,
+              this document is automatically indexed into your channel&apos;s AI Knowledge Base so
+              your AI Copilot can answer student inquiries with citation references.
             </p>
           </div>
         </div>

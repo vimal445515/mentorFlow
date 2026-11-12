@@ -19,6 +19,7 @@ export interface ChannelListResult {
 
 export interface IChannelRepository {
   createForMentor(mentorId: string, channel: Channel): Promise<Channel>;
+  findForMentor(mentorId: string, channelId: string): Promise<Channel | null>;
   listForMentor(
     mentorId: string,
     query: ChannelListCriteria,

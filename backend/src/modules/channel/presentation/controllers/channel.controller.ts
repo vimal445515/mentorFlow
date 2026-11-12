@@ -7,6 +7,7 @@ import type { ICreateChannelUseCase } from "../../domain/interfaces/useCase/ICre
 import type { IListChannelsUseCase } from "../../domain/interfaces/useCase/IListChannelsUseCase.ts";
 import type { IUpdateChannelUseCase } from "../../domain/interfaces/useCase/IUpdateChannelUseCase.ts";
 import type { IDeleteChannelUseCase } from "../../domain/interfaces/useCase/IDeleteChannelUseCase.ts";
+import type { IGetChannelUseCase } from "../../domain/interfaces/useCase/IGetChannelUseCase.ts";
 import type { CreateChannelDto } from "../../application/dto/CreateChannelDto.ts";
 import type { UpdateChannelDto } from "../../application/dto/UpdateChannelDto.ts";
 import { parseChannelListQuery } from "../validators/channel.validator.ts";
@@ -17,6 +18,7 @@ export class ChannelController {
     private readonly listChannelsUseCase: IListChannelsUseCase,
     private readonly updateChannelUseCase: IUpdateChannelUseCase,
     private readonly deleteChannelUseCase: IDeleteChannelUseCase,
+    private readonly getChannelUseCase: IGetChannelUseCase,
   ) {}
 
   async create(req: AuthenticatedRequest, res: Response): Promise<void> {
@@ -39,6 +41,14 @@ export class ChannelController {
       query,
     );
     ResponseHandler.success(res, "Channels fetched successfully.", result);
+  }
+
+  async get(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const channel = await this.getChannelUseCase.execute(
+      this.getMentorId(req),
+      this.getChannelId(req),
+    );
+    ResponseHandler.success(res, "Channel fetched successfully.", channel);
   }
 
   async update(req: AuthenticatedRequest, res: Response): Promise<void> {

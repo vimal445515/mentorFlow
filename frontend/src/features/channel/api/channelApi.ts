@@ -20,6 +20,20 @@ export async function listChannels(
   return response.data.data;
 }
 
+export async function getChannel(
+  channelId: string,
+  signal?: AbortSignal,
+): Promise<Channel> {
+  const response = await api.get<ApiResponse<Channel>>(
+    ENDPOINTS.CHANNELS.BY_ID(channelId),
+    { signal },
+  );
+  if (!response.data.data) {
+    throw new Error("The server did not return the channel details.");
+  }
+  return response.data.data;
+}
+
 export async function createChannel(input: ChannelInput): Promise<Channel> {
   const response = await api.post<ApiResponse<Channel>>(
     ENDPOINTS.CHANNELS.CREATE,

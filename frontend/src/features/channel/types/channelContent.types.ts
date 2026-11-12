@@ -25,12 +25,10 @@ export interface DocumentPostInput extends ChannelPostFields {
   description: string;
   subject: string;
   file: File;
+  thumbnail?: File;
 }
 
-export type CreateChannelPostInput =
-  | TextArticlePostInput
-  | VideoPostInput
-  | DocumentPostInput;
+export type CreateChannelPostInput = TextArticlePostInput | VideoPostInput | DocumentPostInput;
 
 export type UpdateChannelPostInput =
   | TextArticlePostInput
@@ -48,7 +46,9 @@ export interface ChannelPost {
   subject?: string;
   tags: string[];
   fileUrl?: string;
+  fileName?: string;
   thumbnailUrl?: string;
+  thumbnailName?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { AuditLogRecord } from "../types/auditLog.types";
-import type { DataTableColumn, DataTableProps } from "@/shared/components/DataTable/types";
+import type { DataTableProps } from "@/shared/components/DataTable/types";
 import { DataTable } from "@/shared/components/DataTable/DataTable";
 
 interface AuditLogTableProps {

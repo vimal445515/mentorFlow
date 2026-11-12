@@ -18,6 +18,13 @@ export class PrismaChannelRepository implements IChannelRepository {
     return ChannelMapper.fromDb(record);
   }
 
+  async findForMentor(mentorId: string, channelId: string): Promise<Channel | null> {
+    const record = await prisma.channel.findFirst({
+      where: { channelId, mentorId, isDeleted: false },
+    });
+    return record ? ChannelMapper.fromDb(record) : null;
+  }
+
   async listForMentor(
     mentorId: string,
     query: ChannelListCriteria,

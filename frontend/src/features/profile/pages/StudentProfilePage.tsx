@@ -1,6 +1,6 @@
 import { useState, useEffect, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Save, Zap, CheckCircle2 } from "lucide-react";
+import { Camera, Save, CheckCircle2 } from "lucide-react";
 import { ProfileTopBar } from "../components/ProfileTopBar";
 import { StudentSidebar } from "../components/StudentSidebar";
 import { getProfile, updateProfile } from "../api/profileApi";

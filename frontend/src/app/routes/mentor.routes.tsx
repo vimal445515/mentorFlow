@@ -55,5 +55,9 @@ export const mentorRoutes: RouteObject = {
       path: "channel/:channelId/create-content",
       element: withSuspense(<CreateChannelContentPage />),
     },
+    {
+      path: "channel/:channelId/posts/:postId/edit",
+      element: withSuspense(<CreateChannelContentPage />),
+    },
   ],
 };
