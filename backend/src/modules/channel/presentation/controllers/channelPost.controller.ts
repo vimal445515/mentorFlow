@@ -114,9 +114,15 @@ export class ChannelPostController {
   ) {}
 
   async list(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const mentorId = getMentorId(req);
+    const viewerId = req.user?.userId;
+    if (!viewerId) {
+      throw new AppError("Unauthorized.", HttpStatusCode.UNAUTHORIZED);
+    }
     const posts = await this.listPostsUseCase.execute(
       getParam(req, "channelId"),
-      getMentorId(req),
+      mentorId,
+      viewerId,
     );
     ResponseHandler.success(res, "Channel posts fetched successfully.", posts);
   }
@@ -133,6 +139,7 @@ export class ChannelPostController {
     }
     const posts = await this.listPublicPostsUseCase.execute(
       getParam(req, "channelId"),
+      req.user.userId,
     );
     ResponseHandler.success(res, "Public channel posts fetched successfully.", posts);
   }

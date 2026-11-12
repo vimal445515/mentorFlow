@@ -7,8 +7,10 @@ import { StudentSidebar } from "../../profile/components/StudentSidebar";
 import { ChannelHeader } from "../components/ChannelHeader";
 import { ChannelStatsSidebar, type LearningPackItem } from "../components/ChannelStatsSidebar";
 import { ChannelFeedCard } from "../components/ChannelFeedCard";
+import { PostCommentsModal } from "../components/PostCommentsModal";
 import { listPublicChannelPosts } from "../api/channelContentApi";
 import type { ChannelContentType, ChannelPost } from "../types/channelContent.types";
+import { useChannelPostLikes } from "../hooks/useChannelPostLikes";
 import { getPublicChannel } from "../api/channelApi";
 import type { PublicChannel } from "../types/channel.types";
 import { useToast } from "@/shared/components/Toast";
@@ -47,9 +49,10 @@ export const StudentChannelDetailPage: FC = () => {
   const [loadError, setLoadError] = useState<boolean>(false);
 
   // Student interactive states
-  const [likedPostIds, setLikedPostIds] = useState<Record<string, boolean>>({});
   const [bookmarkedPostIds, setBookmarkedPostIds] = useState<Record<string, boolean>>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [commentPost, setCommentPost] = useState<{ postId: string; title: string } | null>(null);
+  const { toggleLike, pendingPostIds } = useChannelPostLikes(setPosts, showToast);
 
   useEffect(() => {
     if (!channelId) return;
@@ -144,10 +147,6 @@ export const StudentChannelDetailPage: FC = () => {
     }
   }, [navigate, showToast]);
 
-  const toggleLike = (postId: string) => {
-    setLikedPostIds((prev) => ({ ...prev, [postId]: !prev[postId] }));
-  };
-
   const toggleBookmark = (postId: string) => {
     setBookmarkedPostIds((prev) => {
       const next = !prev[postId];
@@ -231,7 +230,6 @@ export const StudentChannelDetailPage: FC = () => {
                     </div>
                   ) : (
                     paginatedPosts.map((post) => {
-                      const isLiked = Boolean(likedPostIds[post.postId]);
                       return (
                         <ChannelFeedCard
                           key={post.postId}
@@ -253,11 +251,15 @@ export const StudentChannelDetailPage: FC = () => {
                           description={post.description}
                           tags={post.tags}
                           helpTopic={post.subject || post.tags[0]}
-                          likesCount={isLiked ? 1 : 0}
-                          commentsCount={0}
-                          isLiked={isLiked}
+                          likesCount={post.likesCount ?? 0}
+                          commentsCount={post.commentsCount ?? 0}
+                          isLiked={Boolean(post.isLiked)}
+                          isLikePending={Boolean(pendingPostIds[post.postId])}
                           isBookmarked={Boolean(bookmarkedPostIds[post.postId])}
-                          onToggleLike={() => toggleLike(post.postId)}
+                          onToggleLike={() => void toggleLike(post)}
+                          onOpenComments={() =>
+                            setCommentPost({ postId: post.postId, title: post.title })
+                          }
                           onToggleBookmark={() => toggleBookmark(post.postId)}
                           onBookSession={handleBookSession}
                           onShare={() => {
@@ -345,6 +347,21 @@ export const StudentChannelDetailPage: FC = () => {
               </div>
             </>
           )}
+          <PostCommentsModal
+            postId={commentPost?.postId ?? null}
+            postTitle={commentPost?.title ?? ""}
+            isOpen={commentPost !== null}
+            onClose={() => setCommentPost(null)}
+            onCommentAdded={(postId) =>
+              setPosts((current) =>
+                current.map((post) =>
+                  post.postId === postId
+                    ? { ...post, commentsCount: (post.commentsCount ?? 0) + 1 }
+                    : post,
+                ),
+              )
+            }
+          />
         </main>
       </div>
     </div>

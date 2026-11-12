@@ -20,6 +20,9 @@ model User {
 
   studentProfile StudentProfile?
   mentorProfile  mentorProfile?
+  postComments   PostComment[]
+  postLikes      PostLike[]
+
   
   @@unique([email,role])
   @@index([createdAt])
@@ -196,9 +199,42 @@ model ChannelPost {
 
   channel     Channel           @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
   mentor      mentorProfile     @relation(fields: [mentorId], references: [mentorId], onDelete: Cascade)
+  comments PostComment[]
+  likes    PostLike[]
 
   @@index([channelId, createdAt])
   @@index([mentorId, createdAt])
   @@index([status])
   @@index([type])
+}
+
+model PostComment {
+  commentId       Int      @id @default(autoincrement())
+  postId          String
+  userId          String
+  parentCommentId Int?
+  commentText     String
+  createdAt       DateTime @default(now())
+
+  post          ChannelPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentComment PostComment? @relation("CommentReplies", fields: [parentCommentId], references: [commentId], onDelete: Cascade)
+  replies       PostComment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([userId])
+  @@index([parentCommentId])
+}
+
+model PostLike {
+  likeId  Int      @id @default(autoincrement())
+  postId  String
+  userId  String
+  likedAt DateTime @default(now())
+
+  post ChannelPost @relation(fields: [postId], references: [postId], onDelete: Cascade)
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
 }

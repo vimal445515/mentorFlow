@@ -37,8 +37,10 @@ interface ChannelFeedCardProps {
   // Student props
   helpTopic?: string;
   isLiked?: boolean;
+  isLikePending?: boolean;
   isBookmarked?: boolean;
   onToggleLike?: () => void;
+  onOpenComments?: () => void;
   onToggleBookmark?: () => void;
   onBookSession?: () => void;
   onShare?: () => void;
@@ -66,8 +68,10 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
   isDeleting = false,
   helpTopic,
   isLiked = false,
+  isLikePending = false,
   isBookmarked = false,
   onToggleLike,
+  onOpenComments,
   onToggleBookmark,
   onBookSession,
   onShare,
@@ -176,15 +180,20 @@ export const ChannelFeedCard: FC<ChannelFeedCardProps> = ({
           <button
             type="button"
             onClick={onToggleLike}
+            disabled={isLikePending}
+            aria-pressed={isLiked}
+            aria-label={isLiked ? "Unlike post" : "Like post"}
             className={`flex items-center gap-1 transition-colors cursor-pointer ${
               isLiked ? "text-red-600 font-semibold" : "hover:text-red-600"
-            }`}
+            } disabled:cursor-wait disabled:opacity-60`}
           >
             <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-red-600 text-red-600" : ""}`} />
             <span>{likesCount}</span>
           </button>
           <button
             type="button"
+            onClick={onOpenComments}
+            aria-label={`View ${commentsCount} comments`}
             className={`flex items-center gap-1 transition-colors cursor-pointer ${
               isStudent ? "hover:text-[#B44D29]" : "hover:text-[#3D6946]"
             }`}

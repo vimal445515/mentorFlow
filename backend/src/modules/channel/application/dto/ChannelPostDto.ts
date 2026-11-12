@@ -17,3 +17,9 @@ export interface ChannelPostDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ChannelPostFeedDto extends ChannelPostDto {
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
+}

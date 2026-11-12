@@ -19,6 +19,7 @@ import { CreateChannelPostUseCase } from "../../modules/channel/application/useC
 import { ListChannelPostsUseCase } from "../../modules/channel/application/useCase/ListChannelPostsUseCase.ts";
 import { UpdateChannelPostUseCase } from "../../modules/channel/application/useCase/UpdateChannelPostUseCase.ts";
 import { DeleteChannelPostUseCase } from "../../modules/channel/application/useCase/DeleteChannelPostUseCase.ts";
+import { bindCommentAndLikes } from "./commentAndLikes.binder.ts";
 
 export const bindChannels = (container: Container) => {
   container
@@ -38,7 +39,10 @@ export const bindChannels = (container: Container) => {
     new DeleteChannelUseCase(channelRepository),
     new GetChannelUseCase(channelRepository),
   );
-  const channelPostRepository = new PrismaChannelPostRepository();
+  const commentAndLikesModule = bindCommentAndLikes();
+  const channelPostRepository = new PrismaChannelPostRepository(
+    commentAndLikesModule.repository,
+  );
   const storageService = new S3StorageService();
   const channelPostController = new ChannelPostController(
     new CreateChannelPostUseCase(channelPostRepository, storageService),
@@ -47,10 +51,13 @@ export const bindChannels = (container: Container) => {
     new UpdateChannelPostUseCase(channelPostRepository, storageService),
     new DeleteChannelPostUseCase(channelPostRepository, storageService),
   );
-
   return {
     channelController: controller,
     channelPostController,
-    channelRoutes: createChannelRoutes(controller, channelPostController),
+    channelRoutes: createChannelRoutes(
+      controller,
+      channelPostController,
+      commentAndLikesModule.routes,
+    ),
   };
 };

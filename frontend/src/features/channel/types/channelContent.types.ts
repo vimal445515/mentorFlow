@@ -49,6 +49,24 @@ export interface ChannelPost {
   fileName?: string;
   thumbnailUrl?: string;
   thumbnailName?: string;
+  likesCount?: number;
+  commentsCount?: number;
+  isLiked?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PostComment {
+  commentId: number;
+  parentCommentId: number | null;
+  commentText: string;
+  createdAt: string;
+  authorName: string;
+  authorImageUrl?: string;
+}
+
+export interface PostEngagement {
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
 }

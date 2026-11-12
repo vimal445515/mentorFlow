@@ -13,8 +13,10 @@ import {
 export function createChannelRoutes(
   controller: ChannelController,
   postController: ChannelPostController,
+  commentAndLikesRoutes: Router,
 ): Router {
   const router = Router();
+  router.use(commentAndLikesRoutes);
 
   router.get(
     "/public/:channelId/posts",

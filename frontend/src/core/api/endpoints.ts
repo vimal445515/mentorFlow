@@ -39,6 +39,10 @@ export const ENDPOINTS = {
       `/channels/${encodeURIComponent(channelId)}/posts`,
     BY_ID: (postId: string) => `/channels/posts/${encodeURIComponent(postId)}`,
   },
+  CHANNEL_POST_INTERACTIONS: {
+    COMMENTS: (postId: string) => `/channels/posts/${encodeURIComponent(postId)}/comments`,
+    LIKE: (postId: string) => `/channels/posts/${encodeURIComponent(postId)}/like`,
+  },
   USERS: {
     LIST: "/users",
     UPDATE_STATUS: (userId: string) => `/users/${userId}/status`,

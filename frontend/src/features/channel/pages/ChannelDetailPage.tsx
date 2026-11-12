@@ -5,8 +5,10 @@ import { MentorSidebar } from "../../profile/components/MentorSidebar";
 import { ChannelHeader } from "../components/ChannelHeader";
 import { ChannelStatsSidebar } from "../components/ChannelStatsSidebar";
 import { ChannelFeedCard } from "../components/ChannelFeedCard";
+import { PostCommentsModal } from "../components/PostCommentsModal";
 import { listChannelPosts, deleteChannelPost } from "../api/channelContentApi";
 import type { ChannelContentType, ChannelPost } from "../types/channelContent.types";
+import { useChannelPostLikes } from "../hooks/useChannelPostLikes";
 import { useToast } from "@/shared/components/Toast";
 import { useMentorLogout } from "@/shared/hooks/useMentorLogout";
 import { RouteLoader } from "@/shared/components/RouteLoader";
@@ -54,6 +56,8 @@ export const ChannelDetailPage: FC = () => {
   const [loadErrorKey, setLoadErrorKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+  const [commentPost, setCommentPost] = useState<{ postId: string; title: string } | null>(null);
+  const { toggleLike, pendingPostIds } = useChannelPostLikes(setPosts, showToast);
   const requestKey = channelId ? `${channelId}:${reloadKey}` : "";
   const loading = Boolean(channelId) && settledRequestKey !== requestKey;
   const loadError = !channelId || loadErrorKey === requestKey;
@@ -276,8 +280,14 @@ export const ChannelDetailPage: FC = () => {
                           : undefined
                     }
                     tags={post.tags}
-                    likesCount={0}
-                    commentsCount={0}
+                    likesCount={post.likesCount ?? 0}
+                    commentsCount={post.commentsCount ?? 0}
+                    isLiked={Boolean(post.isLiked)}
+                    isLikePending={Boolean(pendingPostIds[post.postId])}
+                    onToggleLike={() => void toggleLike(post)}
+                    onOpenComments={() =>
+                      setCommentPost({ postId: post.postId, title: post.title })
+                    }
                     onEdit={() => handleEdit(post)}
                     onDelete={() => void handleDelete(post)}
                     isDeleting={deletingPostId === post.postId}
@@ -342,6 +352,21 @@ export const ChannelDetailPage: FC = () => {
             </div>
             <ChannelStatsSidebar />
           </div>
+          <PostCommentsModal
+            postId={commentPost?.postId ?? null}
+            postTitle={commentPost?.title ?? ""}
+            isOpen={commentPost !== null}
+            onClose={() => setCommentPost(null)}
+            onCommentAdded={(postId) =>
+              setPosts((current) =>
+                current.map((post) =>
+                  post.postId === postId
+                    ? { ...post, commentsCount: (post.commentsCount ?? 0) + 1 }
+                    : post,
+                ),
+              )
+            }
+          />
         </main>
       </div>
     </div>

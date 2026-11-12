@@ -3,12 +3,14 @@ import { prisma } from "../../../../config/database.ts";
 import type { ChannelPost } from "../../domain/entities/ChannelPost.ts";
 import type {
   ChannelPostAsset,
+  ChannelPostFeedItem,
   CreateChannelPostData,
   IChannelPostRepository,
   UpdateChannelPostData,
 } from "../../domain/repositories/IChannelPostRepository.ts";
 import { ChannelStatus } from "../../domain/enums/ChannelStatus.ts";
 import { PrismaChannelPostMapper } from "../mappers/PrismaChannelPostMapper.ts";
+import type { IPostInteractionRepository } from "../../../commentAndLikes/domain/repositories/IPostInteractionRepository.ts";
 
 function toDatabaseType(type: ChannelPost["type"]): "article" | "video" | "document" {
   return type === "TEXT" ? "article" : type === "VIDEO" ? "video" : "document";
@@ -37,6 +39,8 @@ function assetFields(
 }
 
 export class PrismaChannelPostRepository implements IChannelPostRepository {
+  constructor(private readonly interactionRepository: IPostInteractionRepository) {}
+
   async channelBelongsToMentor(
     channelId: string,
     mentorId: string,
@@ -82,15 +86,33 @@ export class PrismaChannelPostRepository implements IChannelPostRepository {
     return PrismaChannelPostMapper.toDomain(record);
   }
 
-  async listForMentor(channelId: string, mentorId: string): Promise<ChannelPost[]> {
+  async listForMentor(
+    channelId: string,
+    mentorId: string,
+    viewerId: string,
+  ): Promise<ChannelPostFeedItem[]> {
     const records = await prisma.channelPost.findMany({
       where: { channelId, mentorId, status: "published" },
       orderBy: [{ createdAt: "desc" }, { postId: "asc" }],
     });
-    return records.map(PrismaChannelPostMapper.toDomain);
+    const posts = records.map(PrismaChannelPostMapper.toDomain);
+    const engagements = await this.interactionRepository.getEngagements(
+      posts.map((post) => post.postId),
+      viewerId,
+    );
+    const engagementByPostId = new Map(engagements.map((item) => [item.postId, item]));
+    return posts.map((post) => ({
+      post,
+      likesCount: engagementByPostId.get(post.postId)?.likesCount ?? 0,
+      commentsCount: engagementByPostId.get(post.postId)?.commentsCount ?? 0,
+      isLiked: engagementByPostId.get(post.postId)?.isLiked ?? false,
+    }));
   }
 
-  async listPublishedForPublicChannel(channelId: string): Promise<ChannelPost[]> {
+  async listPublishedForPublicChannel(
+    channelId: string,
+    viewerId: string,
+  ): Promise<ChannelPostFeedItem[]> {
     const records = await prisma.channelPost.findMany({
       where: {
         channelId,
@@ -102,7 +124,18 @@ export class PrismaChannelPostRepository implements IChannelPostRepository {
       },
       orderBy: [{ createdAt: "desc" }, { postId: "asc" }],
     });
-    return records.map(PrismaChannelPostMapper.toDomain);
+    const posts = records.map(PrismaChannelPostMapper.toDomain);
+    const engagements = await this.interactionRepository.getEngagements(
+      posts.map((post) => post.postId),
+      viewerId,
+    );
+    const engagementByPostId = new Map(engagements.map((item) => [item.postId, item]));
+    return posts.map((post) => ({
+      post,
+      likesCount: engagementByPostId.get(post.postId)?.likesCount ?? 0,
+      commentsCount: engagementByPostId.get(post.postId)?.commentsCount ?? 0,
+      isLiked: engagementByPostId.get(post.postId)?.isLiked ?? false,
+    }));
   }
 
   async findForMentor(postId: string, mentorId: string): Promise<ChannelPost | null> {

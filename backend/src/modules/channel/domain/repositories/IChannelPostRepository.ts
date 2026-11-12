@@ -32,12 +32,26 @@ export interface UpdateChannelPostData {
   thumbnail?: ChannelPostAsset;
 }
 
+export interface ChannelPostFeedItem {
+  post: ChannelPost;
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
+}
+
 export interface IChannelPostRepository {
   channelBelongsToMentor(channelId: string, mentorId: string): Promise<boolean>;
   isPublicChannel(channelId: string): Promise<boolean>;
   create(data: CreateChannelPostData): Promise<ChannelPost>;
-  listForMentor(channelId: string, mentorId: string): Promise<ChannelPost[]>;
-  listPublishedForPublicChannel(channelId: string): Promise<ChannelPost[]>;
+  listForMentor(
+    channelId: string,
+    mentorId: string,
+    viewerId: string,
+  ): Promise<ChannelPostFeedItem[]>;
+  listPublishedForPublicChannel(
+    channelId: string,
+    viewerId: string,
+  ): Promise<ChannelPostFeedItem[]>;
   findForMentor(postId: string, mentorId: string): Promise<ChannelPost | null>;
   updateForMentor(
     postId: string,
