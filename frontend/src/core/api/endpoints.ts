@@ -27,10 +27,14 @@ export const ENDPOINTS = {
   CHANNELS: {
     LIST: "/channels",
     PUBLIC: "/channels/public",
+    PUBLIC_BY_ID: (channelId: string) =>
+      `/channels/public/${encodeURIComponent(channelId)}`,
     CREATE: "/channels",
     BY_ID: (channelId: string) => `/channels/${encodeURIComponent(channelId)}`,
   },
   CHANNEL_POSTS: {
+    PUBLIC_BY_CHANNEL: (channelId: string) =>
+      `/channels/public/${encodeURIComponent(channelId)}/posts`,
     BY_CHANNEL: (channelId: string) =>
       `/channels/${encodeURIComponent(channelId)}/posts`,
     BY_ID: (postId: string) => `/channels/posts/${encodeURIComponent(postId)}`,

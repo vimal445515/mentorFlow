@@ -23,6 +23,20 @@ export async function listChannelPosts(
   return response.data.data;
 }
 
+export async function listPublicChannelPosts(
+  channelId: string,
+  signal?: AbortSignal,
+): Promise<ChannelPost[]> {
+  const response = await api.get<ApiResponse<ChannelPost[]>>(
+    ENDPOINTS.CHANNEL_POSTS.PUBLIC_BY_CHANNEL(channelId),
+    { signal },
+  );
+  if (!response.data.data) {
+    throw new Error("The server did not return the public channel posts.");
+  }
+  return response.data.data;
+}
+
 function toFormData(input: CreateChannelPostInput | UpdateChannelPostInput): FormData {
   const formData = new FormData();
   formData.append("type", input.type);

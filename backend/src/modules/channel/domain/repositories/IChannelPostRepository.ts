@@ -34,8 +34,10 @@ export interface UpdateChannelPostData {
 
 export interface IChannelPostRepository {
   channelBelongsToMentor(channelId: string, mentorId: string): Promise<boolean>;
+  isPublicChannel(channelId: string): Promise<boolean>;
   create(data: CreateChannelPostData): Promise<ChannelPost>;
   listForMentor(channelId: string, mentorId: string): Promise<ChannelPost[]>;
+  listPublishedForPublicChannel(channelId: string): Promise<ChannelPost[]>;
   findForMentor(postId: string, mentorId: string): Promise<ChannelPost | null>;
   updateForMentor(
     postId: string,

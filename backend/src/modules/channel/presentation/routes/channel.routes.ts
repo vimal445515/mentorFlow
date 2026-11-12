@@ -17,14 +17,24 @@ export function createChannelRoutes(
   const router = Router();
 
   router.get(
-    "/:channelId/posts",
+    "/public/:channelId/posts",
     authMiddleware,
-    asyncHandler(postController.list.bind(postController)),
+    asyncHandler(postController.listPublic.bind(postController)),
+  );
+  router.get(
+    "/public/:channelId",
+    authMiddleware,
+    asyncHandler(controller.getPublic.bind(controller)),
   );
   router.get(
     "/public",
     authMiddleware,
     asyncHandler(controller.listPublic.bind(controller)),
+  );
+  router.get(
+    "/:channelId/posts",
+    authMiddleware,
+    asyncHandler(postController.list.bind(postController)),
   );
   router.post(
     "/:channelId/posts",

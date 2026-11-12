@@ -7,6 +7,7 @@ import type {
   IChannelPostRepository,
   UpdateChannelPostData,
 } from "../../domain/repositories/IChannelPostRepository.ts";
+import { ChannelStatus } from "../../domain/enums/ChannelStatus.ts";
 import { PrismaChannelPostMapper } from "../mappers/PrismaChannelPostMapper.ts";
 
 function toDatabaseType(type: ChannelPost["type"]): "article" | "video" | "document" {
@@ -47,6 +48,18 @@ export class PrismaChannelPostRepository implements IChannelPostRepository {
     return channel !== null;
   }
 
+  async isPublicChannel(channelId: string): Promise<boolean> {
+    const channel = await prisma.channel.findFirst({
+      where: {
+        channelId,
+        status: ChannelStatus.ACTIVE,
+        isDeleted: false,
+      },
+      select: { channelId: true },
+    });
+    return channel !== null;
+  }
+
   async create(data: CreateChannelPostData): Promise<ChannelPost> {
     const record = await prisma.channelPost.create({
       data: {
@@ -72,6 +85,21 @@ export class PrismaChannelPostRepository implements IChannelPostRepository {
   async listForMentor(channelId: string, mentorId: string): Promise<ChannelPost[]> {
     const records = await prisma.channelPost.findMany({
       where: { channelId, mentorId, status: "published" },
+      orderBy: [{ createdAt: "desc" }, { postId: "asc" }],
+    });
+    return records.map(PrismaChannelPostMapper.toDomain);
+  }
+
+  async listPublishedForPublicChannel(channelId: string): Promise<ChannelPost[]> {
+    const records = await prisma.channelPost.findMany({
+      where: {
+        channelId,
+        status: "published",
+        channel: {
+          isDeleted: false,
+          status: ChannelStatus.ACTIVE,
+        },
+      },
       orderBy: [{ createdAt: "desc" }, { postId: "asc" }],
     });
     return records.map(PrismaChannelPostMapper.toDomain);

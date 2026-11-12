@@ -1,6 +1,7 @@
 import type { ChannelResponseDto } from "./ChannelResponseDto.ts";
 
 export interface PublicChannelResponseDto extends ChannelResponseDto {
+  mentorId: string;
   mentor: {
     fullName: string;
     headline: string | null;

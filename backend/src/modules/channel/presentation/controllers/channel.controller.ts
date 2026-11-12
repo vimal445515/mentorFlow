@@ -6,6 +6,7 @@ import { ResponseHandler } from "../../../../shared/response/responseHandler.ts"
 import type { ICreateChannelUseCase } from "../../domain/interfaces/useCase/ICreateChannelUseCase.ts";
 import type { IListChannelsUseCase } from "../../domain/interfaces/useCase/IListChannelsUseCase.ts";
 import type { IListPublicChannelsUseCase } from "../../domain/interfaces/useCase/IListPublicChannelsUseCase.ts";
+import type { IGetPublicChannelUseCase } from "../../domain/interfaces/useCase/IGetPublicChannelUseCase.ts";
 import type { IUpdateChannelUseCase } from "../../domain/interfaces/useCase/IUpdateChannelUseCase.ts";
 import type { IDeleteChannelUseCase } from "../../domain/interfaces/useCase/IDeleteChannelUseCase.ts";
 import type { IGetChannelUseCase } from "../../domain/interfaces/useCase/IGetChannelUseCase.ts";
@@ -18,6 +19,7 @@ export class ChannelController {
     private readonly createChannelUseCase: ICreateChannelUseCase,
     private readonly listChannelsUseCase: IListChannelsUseCase,
     private readonly listPublicChannelsUseCase: IListPublicChannelsUseCase,
+    private readonly getPublicChannelUseCase: IGetPublicChannelUseCase,
     private readonly updateChannelUseCase: IUpdateChannelUseCase,
     private readonly deleteChannelUseCase: IDeleteChannelUseCase,
     private readonly getChannelUseCase: IGetChannelUseCase,
@@ -50,6 +52,14 @@ export class ChannelController {
     const query = parseChannelListQuery(req.query);
     const result = await this.listPublicChannelsUseCase.execute(query);
     ResponseHandler.success(res, "Public channels fetched successfully.", result);
+  }
+
+  async getPublic(req: AuthenticatedRequest, res: Response): Promise<void> {
+    this.assertStudent(req);
+    const channel = await this.getPublicChannelUseCase.execute(
+      this.getChannelId(req),
+    );
+    ResponseHandler.success(res, "Public channel fetched successfully.", channel);
   }
 
   async get(req: AuthenticatedRequest, res: Response): Promise<void> {

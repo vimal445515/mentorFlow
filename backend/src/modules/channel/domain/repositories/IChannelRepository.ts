@@ -40,6 +40,7 @@ export interface PublicChannelListResult {
 export interface IChannelRepository {
   createForMentor(mentorId: string, channel: Channel): Promise<Channel>;
   findForMentor(mentorId: string, channelId: string): Promise<Channel | null>;
+  findPublic(channelId: string): Promise<PublicChannelSummary | null>;
   listForMentor(
     mentorId: string,
     query: ChannelListCriteria,

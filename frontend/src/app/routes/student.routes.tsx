@@ -3,7 +3,11 @@ import { ProtectedRoute } from "@/shared/guards/ProtectedRoute";
 import { RoleGuard } from "@/shared/guards/RoleGuard";
 import { StudentLayout } from "@/shared/layouts/StudentLayout";
 import { withSuspense } from "@/shared/components/withSuspense";
-import { StudentChannelsPage, StudentProfilePage } from "./lazyPages";
+import {
+  StudentChannelDetailPage,
+  StudentChannelsPage,
+  StudentProfilePage,
+} from "./lazyPages";
 
 export const studentRoutes: RouteObject = {
   path: "/student",
@@ -18,6 +22,10 @@ export const studentRoutes: RouteObject = {
     {
       path: "channels",
       element: withSuspense(<StudentChannelsPage />),
+    },
+    {
+      path: "channels/:channelId",
+      element: withSuspense(<StudentChannelDetailPage />),
     },
     {
       path: "profile",

@@ -41,6 +41,7 @@ export interface ChannelListResponse {
 }
 
 export interface PublicChannel extends Channel {
+  mentorId: string;
   mentor: {
     fullName: string;
     headline: string | null;

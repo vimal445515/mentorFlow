@@ -8,6 +8,7 @@ import { HttpStatusCode } from "../../../../shared/constant/HttpStatusCode.ts";
 import { ResponseHandler } from "../../../../shared/response/responseHandler.ts";
 import type { CreateChannelPostUseCase } from "../../application/useCase/CreateChannelPostUseCase.ts";
 import type { ListChannelPostsUseCase } from "../../application/useCase/ListChannelPostsUseCase.ts";
+import type { ListPublicChannelPostsUseCase } from "../../application/useCase/ListPublicChannelPostsUseCase.ts";
 import type { UpdateChannelPostUseCase } from "../../application/useCase/UpdateChannelPostUseCase.ts";
 import type { DeleteChannelPostUseCase } from "../../application/useCase/DeleteChannelPostUseCase.ts";
 import { parseChannelPostInput } from "../validators/channelPost.validator.ts";
@@ -107,6 +108,7 @@ export class ChannelPostController {
   constructor(
     private readonly createPostUseCase: CreateChannelPostUseCase,
     private readonly listPostsUseCase: ListChannelPostsUseCase,
+    private readonly listPublicPostsUseCase: ListPublicChannelPostsUseCase,
     private readonly updatePostUseCase: UpdateChannelPostUseCase,
     private readonly deletePostUseCase: DeleteChannelPostUseCase,
   ) {}
@@ -117,6 +119,22 @@ export class ChannelPostController {
       getMentorId(req),
     );
     ResponseHandler.success(res, "Channel posts fetched successfully.", posts);
+  }
+
+  async listPublic(req: AuthenticatedRequest, res: Response): Promise<void> {
+    if (!req.user?.userId) {
+      throw new AppError("Unauthorized.", HttpStatusCode.UNAUTHORIZED);
+    }
+    if (req.user.role !== "STUDENT") {
+      throw new AppError(
+        "Only students can view public channel posts.",
+        HttpStatusCode.FORBIDDEN,
+      );
+    }
+    const posts = await this.listPublicPostsUseCase.execute(
+      getParam(req, "channelId"),
+    );
+    ResponseHandler.success(res, "Public channel posts fetched successfully.", posts);
   }
 
   async create(req: AuthenticatedRequest, res: Response): Promise<void> {

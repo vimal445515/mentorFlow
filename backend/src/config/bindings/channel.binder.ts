@@ -5,6 +5,8 @@ import { PrismaChannelRepository } from "../../modules/channel/infrastructure/re
 import { CreateChannelUseCase } from "../../modules/channel/application/useCase/CreateChannelUseCase.ts";
 import { ListChannelsUseCase } from "../../modules/channel/application/useCase/ListChannelsUseCase.ts";
 import { ListPublicChannelsUseCase } from "../../modules/channel/application/useCase/ListPublicChannelsUseCase.ts";
+import { GetPublicChannelUseCase } from "../../modules/channel/application/useCase/GetPublicChannelUseCase.ts";
+import { ListPublicChannelPostsUseCase } from "../../modules/channel/application/useCase/ListPublicChannelPostsUseCase.ts";
 import { UpdateChannelUseCase } from "../../modules/channel/application/useCase/UpdateChannelUseCase.ts";
 import { DeleteChannelUseCase } from "../../modules/channel/application/useCase/DeleteChannelUseCase.ts";
 import { GetChannelUseCase } from "../../modules/channel/application/useCase/GetChannelUseCase.ts";
@@ -31,6 +33,7 @@ export const bindChannels = (container: Container) => {
     new CreateChannelUseCase(channelRepository),
     new ListChannelsUseCase(channelRepository),
     new ListPublicChannelsUseCase(channelRepository),
+    new GetPublicChannelUseCase(channelRepository),
     new UpdateChannelUseCase(channelRepository),
     new DeleteChannelUseCase(channelRepository),
     new GetChannelUseCase(channelRepository),
@@ -40,6 +43,7 @@ export const bindChannels = (container: Container) => {
   const channelPostController = new ChannelPostController(
     new CreateChannelPostUseCase(channelPostRepository, storageService),
     new ListChannelPostsUseCase(channelPostRepository, storageService),
+    new ListPublicChannelPostsUseCase(channelPostRepository, storageService),
     new UpdateChannelPostUseCase(channelPostRepository, storageService),
     new DeleteChannelPostUseCase(channelPostRepository, storageService),
   );

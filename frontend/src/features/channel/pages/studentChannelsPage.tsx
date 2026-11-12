@@ -333,9 +333,12 @@ export const StudentChannelsPage: FC = () => {
                         <div className="flex items-center gap-2.5">
                           <button
                             type="button"
-                            disabled
-                            title="Channel entry is not available yet"
-                            className="flex-1 cursor-not-allowed rounded-full bg-[#B44D29] px-4 py-2.5 text-xs font-semibold text-white opacity-70"
+                            onClick={() =>
+                              navigate(
+                                `/student/channels/${encodeURIComponent(channel.channelId)}`,
+                              )
+                            }
+                            className="flex-1 cursor-pointer rounded-full bg-[#B44D29] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#9E4121]"
                           >
                             <span>Enter Channel</span>
                             <ArrowRight aria-hidden="true" className="ml-1.5 inline h-3.5 w-3.5" />
